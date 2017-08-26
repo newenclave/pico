@@ -13,13 +13,13 @@ class Parser(object):
 
     class precedence:
         LOWEST          = 0
-        EQUALS          = 1; # ==
-        LESSGREATER     = 2; # > or <
-        SUM             = 3; # + or -
-        PRODUCT         = 4; # * or /
-        PREFIX          = 5; # -X or !X
-        CALL            = 6; # myFunction(X)
-        INDEX           = 7; # array[index]
+        EQUALS          = 1 # ==
+        LESSGREATER     = 2 # > or <
+        SUM             = 3 # + or -
+        PRODUCT         = 4 # * or /
+        PREFIX          = 5 # -X or !X
+        CALL            = 6 # myFunction(X)
+        INDEX           = 7 # array[index]
 
     def precedence_for(self, token):
         vals = {
