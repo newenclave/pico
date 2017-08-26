@@ -1,15 +1,20 @@
 import tokens
 
-class lexer(object):
+class Lexer(object):
 
     def __init__(self):
-        self.tknz = tokens.tokenizer( )
+        self.tknz = tokens.Tokenizer( )
         self.tknz.set('fn',         tokens.FN)
         self.tknz.set('return',     tokens.RETURN)
         self.tknz.set('let',        tokens.LET)
         self.tknz.set('if',         tokens.IF)
         self.tknz.set('else',       tokens.ELSE)
+        self.tknz.set('false',      tokens.FALSE)
+        self.tknz.set('true',       tokens.TRUE)
+
         self.tknz.set('=',          tokens.ASSIGN)
+        self.tknz.set('<',          tokens.LESS)
+        self.tknz.set('>',          tokens.GREATER)
         self.tknz.set('==',         tokens.EQ)
         self.tknz.set('!=',         tokens.NOT_EQ)
         self.tknz.set('+',          tokens.PLUS)

@@ -1,15 +1,18 @@
+
 import parser
+from syntax_tree import *
 
 #test = 'let a = fn(x, y) { return x + y }'
 test = '''
-    let a = fn(x, y) { return x * 10 + y }
+    let a = 10000
     let b = "Hello, world!"
-    let c = a(10, 20)
+    let c = !true
+    return -1000
 '''
 
 if __name__ == '__main__':
-    parse = parser.parser(test)
-    for i in parse.tokens:
+    parse = parser.Parser(test)
+    res = parse.get( )
+    for i in res:
         print(i)
 
-    print(parse.eof())

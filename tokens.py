@@ -4,10 +4,14 @@ RETURN      = ('return',    True)
 FN          = ('fn',        True)
 IF          = ('if',        True)
 ELSE        = ('else',      True)
+FALSE       = ('false',     True)
+TRUE        = ('true',      True)
 
-EQ          = ('==',        False)
 ASSIGN      = ('=',         False)
+EQ          = ('==',        False)
 NOT_EQ      = ('!=',        False)
+LESS        = ('<',         False)
+GREATER     = ('>',         False)
 PLUS        = ('+',         False)
 MINUS       = ('-',         False)
 ASTERISK    = ('*',         False)
@@ -28,7 +32,7 @@ NUMBER      = ('NUMBER',    False)
 IDENT       = ('IDENT',     False)
 EOF         = ('EOF',       False)
 
-class tokenizer(object):
+class Tokenizer(object):
 
     def __init__(self):
         self.values = { }
