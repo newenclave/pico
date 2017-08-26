@@ -74,7 +74,7 @@ class Parser(object):
     def current_tok(self):
         return self.current( )[0]
 
-    def current_lex(self):
+    def current_lit(self):
         return self.current( )[1]
 
     def peek(self):
@@ -107,25 +107,25 @@ class Parser(object):
         return False
 
     def get_ident( self ):
-        return expressions.Ident(self.current_lex( ))
+        return expressions.Ident(self.current_lit( ))
 
     def get_number( self ):
-        return expressions.Number(self.current_lex( ))
+        return expressions.Number(self.current_lit( ))
 
     def get_string( self ):
-        return expressions.String(self.current_lex( ))
+        return expressions.String(self.current_lit( ))
 
     def get_bool( self ):
         return expressions.Bool(self.is_current(tokens.TRUE))
 
     def get_prefix( self ):
-        oper = self.current_lex( )
+        oper = self.current_lit( )
         self.advance( )
         expr = self.get_expression( prec = self.precedence.PREFIX )
         return expressions.Prefix(oper,  expr)
 
     def get_infix( self,  left ):
-        oper = self.current_lex( )
+        oper = self.current_lit( )
         current_precedence = self.precedence_for(self.current_tok( ))
         self.advance( )
         right = self.get_expression( prec = current_precedence )
@@ -141,7 +141,6 @@ class Parser(object):
         pp = self.peek_precedence( )
         while (not self.is_peek(tokens.SEMICOLON)) and (prec < pp):
             ptok = self.peek_tok( )
-            print(ptok)
             if not ptok in self.leds:
                 raise ParserError( 'infix function '
                                    'for {0} is not defined'.
