@@ -199,7 +199,6 @@ class Parser(object):
         body = self.get_scope(tokens.RBRACE)
         self.advance( )
         altbody = []
-        print(body)
         if self.is_expected(tokens.ELSE, is_error = False): 
             self.is_expected(tokens.LBRACE)
             self.advance( )                

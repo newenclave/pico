@@ -6,6 +6,7 @@ from syntax_tree import *
 test = '''
     let a = fn(a, b ) { a + b }
     let b = 200
+    let h = "Hello, \\"world\\" "
     let c = a + b * a;
     return -3 * 4 + 2 * 2 - 3 * 5 + 7 / 3
     if(a < 100) { a + 100 }

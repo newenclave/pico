@@ -74,7 +74,7 @@ class Lexer(object):
         res = ''
         while len(input) > 0:
             if input[0] == '\\' and (len(input) > 1) and (input[1] in escape):
-                res = res + escape[input[1]]
+                res += escape[input[1]]
                 input = input[2:]
             elif input[0] == '"':
                 return (res,  input[1:])
