@@ -91,3 +91,23 @@ class IfElse(node.Node):
                 res += ';\n'
             res += '} '
         return res
+        
+class Call(node.Node):
+    def __init__(self, obj,  params, body):        
+        self.obj     = obj
+        self.params  = params
+        self.body    = body
+    def __str__(self):
+        res = str(self.obj) + '('
+        size = 0
+        for i in self.idents:
+            res += str(i)
+            size += 1
+            if size != len(self.idents): 
+                res += ', '
+        res += ') {\n'
+        for i in self.body:
+            res = res + str(i) + ';\n'
+        res = res + '}'
+        return res
+
