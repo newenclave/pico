@@ -13,7 +13,7 @@ class Parser(object):
 
     class precedence:
         LOWEST          = 0
-        EQUALS          = 1 # ==
+        EQUALS          = 1 # == or !=
         LESSGREATER     = 2 # > or <
         SUM             = 3 # + or -
         PRODUCT         = 4 # * or /
@@ -21,47 +21,67 @@ class Parser(object):
         CALL            = 6 # myFunction(X)
         INDEX           = 7 # array[index]
 
-    def precedence_for(self, token):
-        vals = {
-            tokens.EQ:       self.precedence.EQUALS,
-            tokens.NOT_EQ:   self.precedence.EQUALS,
-            tokens.LESS:     self.precedence.LESSGREATER,
-            tokens.GREATER:  self.precedence.LESSGREATER,
-            tokens.MINUS:    self.precedence.SUM,
-            tokens.PLUS:     self.precedence.SUM,
-            tokens.ASTERISK: self.precedence.PRODUCT,
-            tokens.SLASH:    self.precedence.PRODUCT,
-            tokens.LPAREN:   self.precedence.CALL,
-            tokens.LBRACKET: self.precedence.INDEX,
-        }
-
-        if token in vals:
-            return vals[token]
-        else:
-            return self.precedence.LOWEST
-
     def __init__(self,  input):
         lex = lexer.Lexer( )
         self.tokens = lex.get(input)
-        self.tokens.append((tokens.EOF,  'EOF'))
+        self.tokens.append({ 'token': tokens.EOF, 'literal': 'EOF'})
         self.current_id = 0
         self.peek_id = 1 if len(self.tokens) > 1 else 0
 
         self.nuds = {
-            tokens.IDENT:  self.get_ident,
-            tokens.NUMBER: self.get_number,
-            tokens.STRING: self.get_string,
-            tokens.TRUE:   self.get_bool,
-            tokens.FALSE:  self.get_bool,
-            tokens.BANG:   self.get_prefix,
-            tokens.MINUS:  self.get_prefix,
+            tokens.IDENT['name']:   self.get_ident,
+            tokens.NUMBER['name']:  self.get_number,
+            tokens.STRING['name']:  self.get_string,
+            tokens.TRUE['name']:    self.get_bool,
+            tokens.FALSE['name']:   self.get_bool,
+            tokens.BANG['name']:    self.get_prefix,
+            tokens.MINUS['name']:   self.get_prefix,
+            tokens.FN['name']:      self.get_fn,
+            tokens.IF['name']:      self.get_if,
+            
         }
         self.leds = {
-            tokens.PLUS:        self.get_infix,
-            tokens.MINUS:       self.get_infix,
-            tokens.ASTERISK:    self.get_infix,
-            tokens.SLASH:       self.get_infix,
+            tokens.PLUS['name']:        self.get_infix,
+            tokens.MINUS['name']:       self.get_infix,
+            tokens.ASTERISK['name']:    self.get_infix,
+            tokens.SLASH['name']:       self.get_infix,
+
+            tokens.EQ['name']:          self.get_infix,
+            tokens.NOT_EQ['name']:      self.get_infix,
+            tokens.LESS['name']:        self.get_infix,
+            tokens.GREATER['name']:     self.get_infix,
         }
+
+    def precedence_for(self, token):
+        vals = {
+            tokens.EQ['name']:       self.precedence.EQUALS,
+            tokens.NOT_EQ['name']:   self.precedence.EQUALS,
+            tokens.LESS['name']:     self.precedence.LESSGREATER,
+            tokens.GREATER['name']:  self.precedence.LESSGREATER,
+            tokens.MINUS['name']:    self.precedence.SUM,
+            tokens.PLUS['name']:     self.precedence.SUM,
+            tokens.ASTERISK['name']: self.precedence.PRODUCT,
+            tokens.SLASH['name']:    self.precedence.PRODUCT,
+            tokens.LPAREN['name']:   self.precedence.CALL,
+            tokens.LBRACKET['name']: self.precedence.INDEX,
+        }
+
+        if token['name'] in vals:
+            return vals[token['name']]
+        else:
+            return self.precedence.LOWEST
+
+    def token_nud(self,  token):
+        if token['name'] in self.nuds:
+            return self.nuds[token['name']]
+        else:
+            return None
+
+    def token_led(self,  token):
+        if token['name'] in self.leds:
+            return self.leds[token['name']]
+        else:
+            return None
 
     def advance(self):
         self.current_id = self.peek_id
@@ -72,16 +92,16 @@ class Parser(object):
         return self.tokens[self.current_id]
 
     def current_tok(self):
-        return self.current( )[0]
+        return self.current( )['token']
 
     def current_lit(self):
-        return self.current( )[1]
+        return self.current( )['literal']
 
     def peek(self):
         return self.tokens[self.peek_id]
 
     def peek_tok(self):
-        return self.peek( )[0]
+        return self.peek( )['token']
 
     def peek_precedence(self):
         return self.precedence_for(self.peek_tok( ))
@@ -90,19 +110,19 @@ class Parser(object):
         return self.is_current(tokens.EOF)
 
     def is_current(self, token):
-        return self.current( )[0] == token
+        return self.current( )['token'] == token
 
     def is_peek(self, token):
-        return self.peek( )[0] == token
+        return self.peek( )['token'] == token
 
-    def expect( self, token,  is_error = True ):
+    def is_expected( self, token, is_error = True ):
         if self.is_peek(token):
             self.advance( )
             return True
         elif is_error:
-            raise ParserError('Unexpected token "' + \
-                  self.peek( )[0] + '". ' + \
-                  'Expected token to be "' + token[0] + '"')
+            raise ParserError('Unexpecteded token "' + \
+                  self.peek_tok( )['name'] + '". ' + \
+                  'expecteded token to be "' + token['name'] + '"')
 
         return False
 
@@ -132,51 +152,90 @@ class Parser(object):
         return expressions.Infix(oper, left, right)
 
     def get_expression(self, prec = precedence.LOWEST ):
-        if not self.current_tok( ) in self.nuds:
+        nud = self.token_nud(self.current_tok( )) 
+        if not nud:
             raise ParserError( 'prefix function '
                                'for {0} is not defined'.
                                format(self.current_tok( )) )
-        nud = self.nuds[self.current_tok( )]
         left = nud( )
         pp = self.peek_precedence( )
         while (not self.is_peek(tokens.SEMICOLON)) and (prec < pp):
             ptok = self.peek_tok( )
-            if not ptok in self.leds:
+            led = self.token_led(ptok)
+            if not led:
                 raise ParserError( 'infix function '
                                    'for {0} is not defined'.
                                     format(self.peek_tok( )) )
-            led = self.leds[ptok]
             self.advance( )
             left = led(left)
             pp = self.peek_precedence( )
         return left
+        
+    def get_fn(self):
+        self.is_expected(tokens.LPAREN) # fn -> ( 
+        self.advance( )                 # ( -> ...
+        idents = []
+        while self.is_current(tokens.IDENT):
+            idents.append(self.get_ident())
+            if not self.is_expected(tokens.COMMA, is_error = False):
+                break
+            self.advance( )
+        
+        self.is_expected(tokens.RPAREN) # .. -> )
+        self.is_expected(tokens.LBRACE) # ) -> {
+        self.advance( )                 # { -> ..
+        body = self.get_scope(tokens.RBRACE)
+        return expressions.Function(idents,  body)
+        
+    def get_if(self):
+        self.is_expected(tokens.LPAREN) # if -> ( 
+        self.advance( )                 # ( -> ...
+        cond = self.get_expression( )
 
+        self.is_expected(tokens.RPAREN)
+        self.is_expected(tokens.LBRACE)
+        self.advance( )
+        
+        body = self.get_scope(tokens.RBRACE)
+        self.advance( )
+        altbody = []
+        print(body)
+        if self.is_expected(tokens.ELSE, is_error = False): 
+            self.is_expected(tokens.LBRACE)
+            self.advance( )                
+            altbody = self.get_scope(tokens.RBRACE)
+        return expressions.IfElse(cond,  body,  altbody)            
+            
     def get_return(self):
         self.advance( )
         expr = self.get_expression( )
         return statements.Return(expr)
 
     def get_let(self):
-        self.expect(tokens.IDENT)
-        name = self.current( )[1]
-        self.expect(tokens.ASSIGN)
+        self.is_expected(tokens.IDENT)
+        name = self.current_lit( )
+        self.is_expected(tokens.ASSIGN)
         self.advance( )
         expr = self.get_expression( )
         return statements.Let(name,  expr)
-
-    def get(self):
+        
+    def get_scope(self, stop_token):
         stmts = [ ]
-        while not self.eof( ):
+        while not self.is_current(stop_token):
             stmt = None
             if self.is_current(tokens.LET):
                 stmt = self.get_let( )
             elif self.is_current(tokens.RETURN):
                 stmt = self.get_return( )
+            elif self.is_current(tokens.SEMICOLON):
+                pass
             else:
                 stmt = self.get_expression( )
-
             if stmt:
                 stmts.append(stmt)
             self.advance( )
         return stmts
+        
+    def get(self):
+        return self.get_scope(tokens.EOF)
 

@@ -1,36 +1,36 @@
 
-LET         = ('let',       True)
-RETURN      = ('return',    True)
-FN          = ('fn',        True)
-IF          = ('if',        True)
-ELSE        = ('else',      True)
-FALSE       = ('false',     True)
-TRUE        = ('true',      True)
+LET         = {'name': 'let',       'ident': True}
+RETURN      = {'name': 'return',    'ident': True}
+FN          = {'name': 'fn',        'ident': True}
+IF          = {'name': 'if',        'ident': True}
+ELSE        = {'name': 'else',      'ident': True}
+FALSE       = {'name': 'false',     'ident': True}
+TRUE        = {'name': 'true',      'ident': True}
 
-ASSIGN      = ('=',         False)
-EQ          = ('==',        False)
-NOT_EQ      = ('!=',        False)
-LESS        = ('<',         False)
-GREATER     = ('>',         False)
-PLUS        = ('+',         False)
-MINUS       = ('-',         False)
-ASTERISK    = ('*',         False)
-SLASH       = ('/',         False)
-BANG        = ('!',         False)
-COMMA       = (',',         False)
-COLON       = (':',         False)
-SEMICOLON   = (';',         False)
-LPAREN      = ('(',         False)
-RPAREN      = (')',         False)
-LBRACE      = ('{',         False)
-RBRACE      = ('}',         False)
-LBRACKET    = ('[',         False)
-RBRACKET    = (']',         False)
+ASSIGN      = {'name': '=',         'ident': False}
+EQ          = {'name': '==',        'ident': False}
+NOT_EQ      = {'name': '!=',        'ident': False}
+LESS        = {'name': '<',         'ident': False}
+GREATER     = {'name': '>',         'ident': False}
+PLUS        = {'name': '+',         'ident': False}
+MINUS       = {'name': '-',         'ident': False}
+ASTERISK    = {'name': '*',         'ident': False}
+SLASH       = {'name': '/',         'ident': False}
+BANG        = {'name': '!',         'ident': False}
+COMMA       = {'name': ',',         'ident': False}
+COLON       = {'name': ':',         'ident': False}
+SEMICOLON   = {'name': ';',         'ident': False}
+LPAREN      = {'name': '(',         'ident': False}
+RPAREN      = {'name': ')',         'ident': False}
+LBRACE      = {'name': '{',         'ident': False}
+RBRACE      = {'name': '}',         'ident': False}
+LBRACKET    = {'name': '[',         'ident': False}
+RBRACKET    = {'name': ']',         'ident': False}
 
-STRING      = ('STRING',    False)
-NUMBER      = ('NUMBER',    False)
-IDENT       = ('IDENT',     False)
-EOF         = ('EOF',       False)
+STRING      = {'name': 'STRING',    'ident': False}
+NUMBER      = {'name': 'NUMBER',    'ident': False}
+IDENT       = {'name': 'IDENT',     'ident': False}
+EOF         = {'name': 'EOF',       'ident': False}
 
 class Tokenizer(object):
 
