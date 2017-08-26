@@ -13,13 +13,32 @@ class Parser(object):
 
     class precedence:
         LOWEST          = 0
-        EQUALS          = 1, # ==
-        LESSGREATER     = 2, # > or <
-        SUM             = 3, # +
-        PRODUCT         = 4, # *
-        PREFIX          = 5, # -X or !X
-        CALL            = 6, # myFunction(X)
-        INDEX           = 7, # array[index]
+        EQUALS          = 1; # ==
+        LESSGREATER     = 2; # > or <
+        SUM             = 3; # + or -
+        PRODUCT         = 4; # * or /
+        PREFIX          = 5; # -X or !X
+        CALL            = 6; # myFunction(X)
+        INDEX           = 7; # array[index]
+
+    def precedence_for(self, token):
+        vals = {
+            tokens.EQ:       self.precedence.EQUALS,
+            tokens.NOT_EQ:   self.precedence.EQUALS,
+            tokens.LESS:     self.precedence.LESSGREATER,
+            tokens.GREATER:  self.precedence.LESSGREATER,
+            tokens.MINUS:    self.precedence.SUM,
+            tokens.PLUS:     self.precedence.SUM,
+            tokens.ASTERISK: self.precedence.PRODUCT,
+            tokens.SLASH:    self.precedence.PRODUCT,
+            tokens.LPAREN:   self.precedence.CALL,
+            tokens.LBRACKET: self.precedence.INDEX,
+        }
+
+        if token in vals:
+            return vals[token]
+        else:
+            return self.precedence.LOWEST
 
     def __init__(self,  input):
         lex = lexer.Lexer( )
@@ -37,7 +56,12 @@ class Parser(object):
             tokens.BANG:   self.get_prefix,
             tokens.MINUS:  self.get_prefix,
         }
-        self.leds = { }
+        self.leds = {
+            tokens.PLUS:        self.get_infix,
+            tokens.MINUS:       self.get_infix,
+            tokens.ASTERISK:    self.get_infix,
+            tokens.SLASH:       self.get_infix,
+        }
 
     def advance(self):
         self.current_id = self.peek_id
@@ -55,6 +79,12 @@ class Parser(object):
 
     def peek(self):
         return self.tokens[self.peek_id]
+
+    def peek_tok(self):
+        return self.peek( )[0]
+
+    def peek_precedence(self):
+        return self.precedence_for(self.peek_tok( ))
 
     def eof(self):
         return self.is_current(tokens.EOF)
@@ -94,6 +124,13 @@ class Parser(object):
         expr = self.get_expression( prec = self.precedence.PREFIX )
         return expressions.Prefix(oper,  expr)
 
+    def get_infix( self,  left ):
+        oper = self.current_lex( )
+        current_precedence = self.precedence_for(self.current_tok( ))
+        self.advance( )
+        right = self.get_expression( prec = current_precedence )
+        return expressions.Infix(oper, left, right)
+
     def get_expression(self, prec = precedence.LOWEST ):
         if not self.current_tok( ) in self.nuds:
             raise ParserError( 'prefix function '
@@ -101,6 +138,18 @@ class Parser(object):
                                format(self.current_tok( )) )
         nud = self.nuds[self.current_tok( )]
         left = nud( )
+        pp = self.peek_precedence( )
+        while (not self.is_peek(tokens.SEMICOLON)) and (prec < pp):
+            ptok = self.peek_tok( )
+            print(ptok)
+            if not ptok in self.leds:
+                raise ParserError( 'infix function '
+                                   'for {0} is not defined'.
+                                    format(self.peek_tok( )) )
+            led = self.leds[ptok]
+            self.advance( )
+            left = led(left)
+            pp = self.peek_precedence( )
         return left
 
     def get_return(self):

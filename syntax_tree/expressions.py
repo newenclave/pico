@@ -47,3 +47,11 @@ class Prefix(node.Node):
     def __str__(self):
         return '({0}{1})'.format( self.oper, self.expr )
 
+class Infix(node.Node):
+    def __init__(self, oper, left, right):
+        self.oper = oper
+        self.left = left
+        self.right = right
+    def __str__(self):
+        return '({0}{1}{2})'.format( self.left,  self.oper, self.right )
+
