@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-5.1.dtd">
 <!-- eric project file for project pico -->
-<!-- Saved: 2017-08-26, 12:38:33 -->
+<!-- Saved: 2017-08-26, 14:11:08 -->
 <!-- Copyright (C) 2017 ,  -->
 <Project version="5.1">
   <Language></Language>
@@ -12,9 +12,12 @@
   <Version>0.1</Version>
   <Author></Author>
   <Email></Email>
+  <Eol index="-1"/>
   <Sources>
     <Source>__init__.py</Source>
+    <Source>lexer.py</Source>
     <Source>main.py</Source>
+    <Source>tokens.py</Source>
   </Sources>
   <Forms/>
   <Translations/>
