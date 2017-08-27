@@ -1,8 +1,7 @@
 
 import parser
-from syntax_tree import *
+#import environment as env
 
-#test = 'let a = fn(x, y) { return x + y }'
 test = '''
     let a = 1000
     let b = "String"
@@ -15,7 +14,7 @@ test = '''
 '''
 
 if __name__ == '__main__':
-    
+  
     try:
         parse = parser.Parser(test)
         res = parse.get( )

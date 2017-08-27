@@ -1,6 +1,5 @@
 import lexer
 import tokens
-
 import astree
 
 class ParserError(Exception):
