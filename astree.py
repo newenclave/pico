@@ -1,6 +1,31 @@
-from . import node
 
-class Ident(node.Node):
+class Node(object):
+    def value(self):
+        return None
+
+class Let(Node):
+    def __init__(self,  ident,  expr):
+        self.ident = ident
+        self.expr  = expr
+    def __str__(self):
+        return 'let {0} = {1}'.format(self.ident, self.expr)
+
+class Return(Node):
+    def __init__(self,  expr):
+        self.expr  = expr
+    def __str__(self):
+        return 'return {0}'.format(self.expr)
+
+class Scope(Node):
+    def __init__(self,  stmt):
+        self.stmt  = stmt
+    def __str__(self):
+        res = ''
+        for i in self.stmt:
+            res += (str(i) + ';\n')
+        return res;
+        
+class Ident(Node):
     def __init__(self,  name):
         self.val = name
 
@@ -10,7 +35,7 @@ class Ident(node.Node):
     def __str__(self):
         return self.val
 
-class String(node.Node):
+class String(Node):
     def __init__(self, val):
         self.val = val
 
@@ -20,7 +45,7 @@ class String(node.Node):
     def __str__(self):
         return '"{0}"'.format(self.val)
 
-class Number(node.Node):
+class Number(Node):
     def __init__(self, val):
         self.val = val
 
@@ -30,7 +55,7 @@ class Number(node.Node):
     def __str__(self):
         return '{0}'.format(self.val)
 
-class Bool(node.Node):
+class Bool(Node):
     def __init__(self, val):
         self.val = val
 
@@ -40,14 +65,14 @@ class Bool(node.Node):
     def __str__(self):
         return '{0}'.format('true' if self.val else 'false')
 
-class Prefix(node.Node):
+class Prefix(Node):
     def __init__(self, oper,  expr):
         self.oper = oper
         self.expr = expr
     def __str__(self):
         return '({0}{1})'.format( self.oper, self.expr )
 
-class Infix(node.Node):
+class Infix(Node):
     def __init__(self, oper, left, right):
         self.oper = oper
         self.left = left
@@ -55,7 +80,7 @@ class Infix(node.Node):
     def __str__(self):
         return '({0}{1}{2})'.format( self.left,  self.oper, self.right )
 
-class Function(node.Node):
+class Function(Node):
     def __init__(self,  idents,  body):
         self.idents = idents
         self.body   = body
@@ -73,7 +98,7 @@ class Function(node.Node):
         res = res + '}'
         return res
     
-class IfElse(node.Node):
+class IfElse(Node):
     def __init__(self,  cond, body,  altbody):
         self.cond    = cond
         self.body    = body
@@ -92,22 +117,41 @@ class IfElse(node.Node):
             res += '} '
         return res
         
-class Call(node.Node):
-    def __init__(self, obj,  params, body):        
+class Call(Node):
+    def __init__(self, obj,  params):        
         self.obj     = obj
         self.params  = params
-        self.body    = body
     def __str__(self):
         res = str(self.obj) + '('
         size = 0
-        for i in self.idents:
+        for i in self.params:
             res += str(i)
             size += 1
-            if size != len(self.idents): 
+            if size != len(self.params): 
                 res += ', '
-        res += ') {\n'
-        for i in self.body:
-            res = res + str(i) + ';\n'
-        res = res + '}'
+        res += ')'
         return res
 
+class Array(Node):
+    def __init__(self, expr):        
+        self.expr     = expr
+    def __str__(self):
+        res = '['
+        size = 0
+        for i in self.expr:
+            res += str(i)
+            size += 1
+            if size != len(self.expr): 
+                res += ', '
+        res += ']'
+        return res
+        
+class Index(Node):
+    def __init__(self, obj,  param):        
+        self.obj     = obj
+        self.param   = param
+    def __str__(self):
+        res = str(self.obj) + '[' + str(self.param) + ']'
+        return res
+        
+    

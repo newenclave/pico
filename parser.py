@@ -1,7 +1,7 @@
 import lexer
 import tokens
 
-from syntax_tree import *
+import astree
 
 class ParserError(Exception):
     def __init__(self, value):
@@ -29,15 +29,17 @@ class Parser(object):
         self.peek_id = 1 if len(self.tokens) > 1 else 0
 
         self.nuds = {
-            tokens.IDENT['name']:   self.get_ident,
-            tokens.NUMBER['name']:  self.get_number,
-            tokens.STRING['name']:  self.get_string,
-            tokens.TRUE['name']:    self.get_bool,
-            tokens.FALSE['name']:   self.get_bool,
-            tokens.BANG['name']:    self.get_prefix,
-            tokens.MINUS['name']:   self.get_prefix,
-            tokens.FN['name']:      self.get_fn,
-            tokens.IF['name']:      self.get_if,
+            tokens.LPAREN['name']:   self.get_paren,
+            tokens.IDENT['name']:    self.get_ident,
+            tokens.NUMBER['name']:   self.get_number,
+            tokens.STRING['name']:   self.get_string,
+            tokens.TRUE['name']:     self.get_bool,
+            tokens.FALSE['name']:    self.get_bool,
+            tokens.BANG['name']:     self.get_prefix,
+            tokens.MINUS['name']:    self.get_prefix,
+            tokens.FN['name']:       self.get_fn,
+            tokens.IF['name']:       self.get_if,
+            tokens.LBRACKET['name']: self.get_array,
             
         }
         self.leds = {
@@ -45,11 +47,13 @@ class Parser(object):
             tokens.MINUS['name']:       self.get_infix,
             tokens.ASTERISK['name']:    self.get_infix,
             tokens.SLASH['name']:       self.get_infix,
-
             tokens.EQ['name']:          self.get_infix,
             tokens.NOT_EQ['name']:      self.get_infix,
             tokens.LESS['name']:        self.get_infix,
             tokens.GREATER['name']:     self.get_infix,
+            
+            tokens.LBRACKET['name']:    self.get_index,
+            tokens.LPAREN['name']:      self.get_call,
         }
 
     def precedence_for(self, token):
@@ -127,30 +131,36 @@ class Parser(object):
         return False
 
     def get_ident( self ):
-        return expressions.Ident(self.current_lit( ))
+        return astree.Ident(self.current_lit( ))
 
     def get_number( self ):
-        return expressions.Number(self.current_lit( ))
+        return astree.Number(self.current_lit( ))
 
     def get_string( self ):
-        return expressions.String(self.current_lit( ))
+        return astree.String(self.current_lit( ))
 
     def get_bool( self ):
-        return expressions.Bool(self.is_current(tokens.TRUE))
+        return astree.Bool(self.is_current(tokens.TRUE))
 
     def get_prefix( self ):
         oper = self.current_lit( )
         self.advance( )
         expr = self.get_expression( prec = self.precedence.PREFIX )
-        return expressions.Prefix(oper,  expr)
+        return astree.Prefix(oper,  expr)
 
     def get_infix( self,  left ):
         oper = self.current_lit( )
         current_precedence = self.precedence_for(self.current_tok( ))
         self.advance( )
         right = self.get_expression( prec = current_precedence )
-        return expressions.Infix(oper, left, right)
+        return astree.Infix(oper, left, right)
 
+    def get_paren(self):
+        self.advance( )
+        res = self.get_expression( )
+        self.is_expected(tokens.RPAREN)
+        return res
+        
     def get_expression(self, prec = precedence.LOWEST ):
         nud = self.token_nud(self.current_tok( )) 
         if not nud:
@@ -175,17 +185,20 @@ class Parser(object):
         self.is_expected(tokens.LPAREN) # fn -> ( 
         self.advance( )                 # ( -> ...
         idents = []
+        
         while self.is_current(tokens.IDENT):
             idents.append(self.get_ident())
             if not self.is_expected(tokens.COMMA, is_error = False):
                 break
             self.advance( )
         
-        self.is_expected(tokens.RPAREN) # .. -> )
+        if not self.is_current(tokens.RPAREN):
+            self.is_expected(tokens.RPAREN) # .. -> )
+            
         self.is_expected(tokens.LBRACE) # ) -> {
         self.advance( )                 # { -> ..
         body = self.get_scope(tokens.RBRACE)
-        return expressions.Function(idents,  body)
+        return astree.Function(idents,  body)
         
     def get_if(self):
         self.is_expected(tokens.LPAREN) # if -> ( 
@@ -203,12 +216,40 @@ class Parser(object):
             self.is_expected(tokens.LBRACE)
             self.advance( )                
             altbody = self.get_scope(tokens.RBRACE)
-        return expressions.IfElse(cond,  body,  altbody)            
-            
+        return astree.IfElse(cond,  body,  altbody)            
+
+    def get_array(self):
+        self.advance( )
+        expr = []
+        while True:
+            expr.append(self.get_expression( ))
+            if not self.is_expected(tokens.COMMA, is_error = False):
+                break
+            self.advance( )
+        self.is_expected(tokens.RBRACKET)
+        return astree.Array(expr)
+    
+    def get_index(self,  obj):
+        self.advance( )
+        expr = self.get_expression( )
+        self.is_expected(tokens.RBRACKET)
+        return astree.Index(obj,  expr)
+
+    def get_call(self,  obj):
+        self.advance( )
+        expr = []
+        while True:
+            expr.append(self.get_expression( ))
+            if not self.is_expected(tokens.COMMA, is_error = False):
+                break
+            self.advance( )
+        self.is_expected(tokens.RPAREN)
+        return astree.Call(obj,  expr)
+        
     def get_return(self):
         self.advance( )
         expr = self.get_expression( )
-        return statements.Return(expr)
+        return astree.Return(expr)
 
     def get_let(self):
         self.is_expected(tokens.IDENT)
@@ -216,7 +257,7 @@ class Parser(object):
         self.is_expected(tokens.ASSIGN)
         self.advance( )
         expr = self.get_expression( )
-        return statements.Let(name,  expr)
+        return astree.Let(name,  expr)
         
     def get_scope(self, stop_token):
         stmts = [ ]
@@ -236,5 +277,5 @@ class Parser(object):
         return stmts
         
     def get(self):
-        return self.get_scope(tokens.EOF)
+        return astree.Scope(self.get_scope(tokens.EOF))
 
