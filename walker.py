@@ -80,6 +80,21 @@ class Walker(object):
     def eval_string(self, node, env):
         return objects.String(node.value( ))
 
+
+    def eval_table(self, node, env):
+        def is_hashable(obj):
+            return obj.type( ) == objects.Type.BOOLEAN  \
+                or obj.type( ) == objects.Type.INTEGER  \
+                or obj.type( ) == objects.Type.STRING
+        expr = { }
+        for a in node.value( ):
+            key = self.eval_next(a[0], env)
+            if not is_hashable(key):
+                raise ExecutionError("Object '{0}' is not hashable.".format(key.type( ) ))
+            val = self.eval_next(a[1], env)
+            expr[key] = val
+        return objects.Table(expr)
+
     def eval_array(self, node, env):
         expr = []
         for a in node.value( ):
@@ -88,12 +103,16 @@ class Walker(object):
 
     def eval_index(self, node, env):
         obj = self.eval_next(node.value( ), env)
-        if not isinstance(obj,  objects.Array):
+        if isinstance(obj, objects.Array):
+            id = self.eval_next(node.index( ), env)
+            if not isinstance(id, objects.Number):
+                raise ExecutionError("Bad index type '{0}' for '{1}'".format(id.type( ), obj.type( )))
+            return obj.value( )[id.value( )]
+        elif isinstance(obj, objects.Table):
+            id = self.eval_next(node.index( ), env)
+            return obj.value( )[id]
+        else:
             raise ExecutionError("Index can not be obtained from '{0}'".format(obj.type( )))
-        id = self.eval_next(node.index( ), env)
-        if not isinstance(id, objects.Number):
-            raise ExecutionError("Bad index type '{0}' for '{1}'".format(id.type( ), obj.type( )))
-        return obj.value( )[id.value( )]
 
     def eval_fn(self, node, env):
         return objects.Function(node.idents, astree.Scope(node.body), env)
@@ -210,6 +229,9 @@ class Walker(object):
 
         elif isinstance(node, astree.Ident):
             res = self.eval_ident(node, env)
+
+        elif isinstance(node, astree.Table):
+            res = self.eval_table(node, env)
 
         elif isinstance(node, astree.Array):
             res = self.eval_array(node, env)

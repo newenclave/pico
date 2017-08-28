@@ -5,8 +5,7 @@ import walker
 import builtin
 
 test = '''
-    if(1<1) { } else { }
-    let a = 100
+    let a = {1: 3423}
 '''
 
 def REPL():

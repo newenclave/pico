@@ -39,6 +39,7 @@ class Parser(object):
             tokens.FN['name']:       self.get_fn,
             tokens.IF['name']:       self.get_if,
             tokens.LBRACKET['name']: self.get_array,
+            tokens.LBRACE['name']:   self.get_table,
 
         }
         self.leds = {
@@ -230,6 +231,22 @@ class Parser(object):
         if not self.is_current(tokens.RBRACKET):
             self.is_expected(tokens.RBRACKET)
         return astree.Array(expr)
+
+    def get_table(self):
+        self.advance( )
+        expr = [ ]
+        while not self.is_current(tokens.RBRACE):
+            key = self.get_expression( )
+            self.is_expected(tokens.COLON)
+            self.advance( )
+            val = self.get_expression( )
+            expr.append((key,  val))
+            if not self.is_expected(tokens.COMMA, is_error = False):
+                break
+            self.advance( )
+        if not self.is_current(tokens.RBRACE):
+            self.is_expected(tokens.RBRACE)
+        return astree.Table(expr)
 
     def get_index(self,  obj):
         self.advance( )

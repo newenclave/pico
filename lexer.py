@@ -29,6 +29,7 @@ class Lexer(object):
         self.tknz.set('/',          tokens.SLASH)
         self.tknz.set('!',          tokens.BANG)
         self.tknz.set(',',          tokens.COMMA)
+        self.tknz.set(':',          tokens.COLON)
         self.tknz.set(';',          tokens.SEMICOLON)
 
         self.tknz.set('(',          tokens.LPAREN)
@@ -88,12 +89,12 @@ class Lexer(object):
         while len(input) > size and input[size].isspace( ):
             size = size + 1
         return input[size:]
-        
+
     def get( self, input ):
-        
+
         def res_unit( token,  literal ):
             return {'token': token,  'literal': literal }
-            
+
         result = [ ]
         input = self.skip_whitespaces(input)
         while len(input):
@@ -121,8 +122,8 @@ class Lexer(object):
                 result.append( res_unit( tokens.STRING,  val[0]) )
                 input = val[1]
             else:
-                raise LexerError("Unis_expecteded symbol '{0}'".format(input[0]) )
-            
+                raise LexerError("Unexpecteded symbol '{0}'".format(input[0]) )
+
             input = self.skip_whitespaces(input)
 
         return result

@@ -184,6 +184,24 @@ class Array(Node):
         res += ']'
         return res
 
+class Table(Node):
+    def __init__(self, expr):
+        self.expr     = expr
+
+    def value(self):
+        return self.expr
+
+    def __str__(self):
+        res = '{'
+        size = 0
+        for i in self.expr:
+            res += '{0}:{1}'.format(str(i[0]),  str(i[1]))
+            size += 1
+            if size != len(self.expr):
+                res += ', '
+        res += '}'
+        return res
+
 class Index(Node):
     def __init__(self, obj,  param):
         self.obj     = obj

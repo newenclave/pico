@@ -5,6 +5,7 @@ class Type:
     STRING   = 'string'
     BOOLEAN  = 'bool'
     ARRAY    = 'array'
+    TABLE    = 'table'
     FUNCTION = 'function'
     BUILTIN  = 'builtin'
 
@@ -29,6 +30,13 @@ class Number(Base):
         return str(self.val)
     def type(self):
         return Type.INTEGER
+    def __hash__(self):
+        return hash(self.value( ))
+    def __eq__(self, other):
+        return (self.type( ) == other.type( )) \
+           and (self.value( ) == other.value( ))
+    def __ne__(self, other):
+        return not(self == other)
 
 class String(Base):
     def __init__(self,  value):
@@ -39,6 +47,13 @@ class String(Base):
         return '"{0}"'.format(self.val)
     def type(self):
         return Type.STRING
+    def __hash__(self):
+        return hash(self.value( ))
+    def __eq__(self, other):
+        return (self.type( ) == other.type( )) \
+           and (self.value( ) == other.value( ))
+    def __ne__(self, other):
+        return not(self == other)
 
 class Boolean(Base):
     def __init__(self,  value):
@@ -49,6 +64,13 @@ class Boolean(Base):
         return 'true' if self.val else 'false'
     def type(self):
         return Type.BOOLEAN
+    def __hash__(self):
+        return hash(self.value( ))
+    def __eq__(self, other):
+        return (self.type( ) == other.type( )) \
+           and (self.value( ) == other.value( ))
+    def __ne__(self, other):
+        return not(self == other)
 
 class Array(Base):
     def __init__(self, value):
@@ -67,6 +89,34 @@ class Array(Base):
         return res
     def type(self):
         return Type.ARRAY
+    def __eq__(self, other):
+        return (self.type( ) == other.type( )) \
+           and (self.value( ) == other.value( ))
+    def __ne__(self, other):
+        return not(self == other)
+
+class Table(Base):
+    def __init__(self, value):
+        self.val = value
+    def value(self):
+        return self.val
+    def __str__(self):
+        res = '{'
+        size = 0
+        for k in self.val:
+            res += '{0}: {1}'.format( str(k), str(self.val[k]))
+            size += 1
+            if size != len(self.val):
+                res += ', '
+        res += '}'
+        return res
+    def type(self):
+        return Type.TABLE
+    def __eq__(self, other):
+        return (self.type( ) == other.type( )) \
+           and (self.value( ) == other.value( ))
+    def __ne__(self, other):
+        return not(self == other)
 
 class Function(Base):
     def __init__(self, idents, body,  env):
