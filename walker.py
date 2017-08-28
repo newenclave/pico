@@ -17,6 +17,7 @@ class Walker(object):
 
         self.oper_prefix = {
             (tokens.BANG['name'],  objects.Type.BOOLEAN): objects.Type.BOOLEAN,
+            (tokens.BANG['name'],  objects.Type.INTEGER): objects.Type.BOOLEAN,
             (tokens.MINUS['name'], objects.Type.INTEGER): objects.Type.INTEGER,
         }
 
@@ -86,7 +87,6 @@ class Walker(object):
     def eval_string(self, node, env):
         return objects.String(node.value( ))
 
-
     def eval_table(self, node, env):
         def is_hashable(obj):
             return obj.type( ) == objects.Type.BOOLEAN  \
@@ -125,6 +125,7 @@ class Walker(object):
 
     def eval_call(self, node, env):
         expr = self.eval_next(node.value( ),  env)
+        res = None
         if isinstance(expr,  objects.Function):
             if len(node.params( )) < len(expr.params( )):
                 raise ExecutionError("Not enough actual parameters for function" )
@@ -134,15 +135,16 @@ class Walker(object):
                 next_res = self.eval_next( id, env )
                 call_env.set( expr.params( )[call_par].value( ), next_res )
                 call_par += 1
-            return self.eval_next(expr.body( ), call_env )
+            res = self.eval_next(expr.body( ), call_env )
         elif isinstance(expr, objects.Builtin):
             params = []
             for id in node.params( ):
                 params.append(self.eval_next( id, env ))
-            return expr.call(params)
+            res = expr.call(params)
         else:
             raise ExecutionError("'{0}' is tot a callable object".format(expr.type( ) ) )
-
+        return res if not isinstance(res,  objects.Return) else res.value( )
+ 
     def eval_prefix(self, node, env):
         expr = self.eval_next(node.value( ), env)
         cort = (node.operator( ), expr.type( ))
@@ -211,14 +213,14 @@ class Walker(object):
         return res
 
     def eval_return(self, node, env):
-        return objects.Return(self.eval_next(node.value( )))
+        return objects.Return(self.eval_next(node.value( ),  env))
 
     def eval_scope(self, node, env):
         res = None
         for next in node.value( ):
             res = self.eval_next(next,  env)
-            if isinstance(node, objects.Return):
-                break
+            if isinstance(res, objects.Return):
+                return res.value( )
         return res
 
     def eval_next(self, node,  env):
@@ -229,6 +231,9 @@ class Walker(object):
         elif isinstance(node, astree.Let):
             res = self.eval_let(node, env)
 
+        elif isinstance(node, astree.Return):
+            res = self.eval_return(node, env)
+            
         elif isinstance(node, astree.Number):
             res = self.eval_number(node, env)
 
@@ -264,7 +269,7 @@ class Walker(object):
 
         elif isinstance(node, astree.IfElse):
             res = self.eval_if(node, env)
-
+        
         return res
 
     def eval(self):

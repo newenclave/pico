@@ -12,7 +12,9 @@ class Let(Node):
 
 class Return(Node):
     def __init__(self,  expr):
-        self.expr  = expr
+        self.expr = expr
+    def value(self):
+        return self.expr
     def __str__(self):
         return 'return {0}'.format(self.expr)
 
@@ -24,9 +26,10 @@ class Scope(Node):
         return self.stmt
 
     def __str__(self):
-        res = ''
+        res = '{\n'
         for i in self.stmt:
             res += (str(i) + ';\n')
+        res += '}'
         return res;
 
 class Ident(Node):
