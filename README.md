@@ -35,5 +35,5 @@ Here `len` and `print` are built-in functions
         }
         impl(0, 1, n)
     }
-    fib(100)
+    print(fib(100))
 ```
