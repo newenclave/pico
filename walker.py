@@ -182,9 +182,9 @@ class Walker(object):
             elif node.operator( ) == '>':
                 return self.new_object(obj_type, left.value( ) > right.value( ))
             elif node.operator( ) == '<=':
-                return self.new_object(obj_type, left.value( ) < right.value( ))
+                return self.new_object(obj_type, left.value( ) <= right.value( ))
             elif node.operator( ) == '>=':
-                return self.new_object(obj_type, left.value( ) > right.value( ))
+                return self.new_object(obj_type, left.value( ) >= right.value( ))
             else:
                 raise ExecutionError("Invalid infix operation '{0}' for '{1}' and '{2}'".
                     format(node.operator( ), left.type( ), right.type( ) ) )
