@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-5.1.dtd">
 <!-- eric project file for project pico -->
-<!-- Saved: 2017-08-28, 11:47:31 -->
+<!-- Saved: 2017-08-28, 11:51:40 -->
 <!-- Copyright (C) 2017 ,  -->
 <Project version="5.1">
   <Language></Language>
@@ -15,6 +15,7 @@
   <Eol index="-1"/>
   <Sources>
     <Source>__init__.py</Source>
+    <Source>astree.py</Source>
     <Source>environment.py</Source>
     <Source>lexer.py</Source>
     <Source>main.py</Source>

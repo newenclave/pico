@@ -39,7 +39,7 @@ class Parser(object):
             tokens.FN['name']:       self.get_fn,
             tokens.IF['name']:       self.get_if,
             tokens.LBRACKET['name']: self.get_array,
-            
+
         }
         self.leds = {
             tokens.PLUS['name']:        self.get_infix,
@@ -50,7 +50,7 @@ class Parser(object):
             tokens.NOT_EQ['name']:      self.get_infix,
             tokens.LESS['name']:        self.get_infix,
             tokens.GREATER['name']:     self.get_infix,
-            
+
             tokens.LBRACKET['name']:    self.get_index,
             tokens.LPAREN['name']:      self.get_call,
         }
@@ -136,13 +136,16 @@ class Parser(object):
         return astree.Number(self.current_lit( ))
 
     def get_string( self ):
-        return astree.String(self.current_lit( ))
+        res = astree.String(self.current_lit( ))
+        while self.is_expected(tokens.STRING, is_error = False):
+            res.val += self.current_lit( )
+        return res
 
     def get_bool( self ):
-        return astree.Bool(self.is_current(tokens.TRUE))
+        return astree.Boolean(self.is_current(tokens.TRUE))
 
     def get_prefix( self ):
-        oper = self.current_lit( )
+        oper = self.current_tok( )['name']
         self.advance( )
         expr = self.get_expression( prec = self.precedence.PREFIX )
         return astree.Prefix(oper,  expr)
@@ -159,9 +162,9 @@ class Parser(object):
         res = self.get_expression( )
         self.is_expected(tokens.RPAREN)
         return res
-        
+
     def get_expression(self, prec = precedence.LOWEST ):
-        nud = self.token_nud(self.current_tok( )) 
+        nud = self.token_nud(self.current_tok( ))
         if not nud:
             raise ParserError( 'prefix function '
                                'for {0} is not defined'.
@@ -179,55 +182,56 @@ class Parser(object):
             left = led(left)
             pp = self.peek_precedence( )
         return left
-        
+
     def get_fn(self):
-        self.is_expected(tokens.LPAREN) # fn -> ( 
+        self.is_expected(tokens.LPAREN) # fn -> (
         self.advance( )                 # ( -> ...
         idents = []
-        
+
         while self.is_current(tokens.IDENT):
             idents.append(self.get_ident())
             if not self.is_expected(tokens.COMMA, is_error = False):
                 break
             self.advance( )
-        
+
         if not self.is_current(tokens.RPAREN):
             self.is_expected(tokens.RPAREN) # .. -> )
-            
+
         self.is_expected(tokens.LBRACE) # ) -> {
         self.advance( )                 # { -> ..
         body = self.get_scope(tokens.RBRACE)
         return astree.Function(idents,  body)
-        
+
     def get_if(self):
-        self.is_expected(tokens.LPAREN) # if -> ( 
+        self.is_expected(tokens.LPAREN) # if -> (
         self.advance( )                 # ( -> ...
         cond = self.get_expression( )
 
         self.is_expected(tokens.RPAREN)
         self.is_expected(tokens.LBRACE)
         self.advance( )
-        
+
         body = self.get_scope(tokens.RBRACE)
         self.advance( )
         altbody = []
-        if self.is_expected(tokens.ELSE, is_error = False): 
+        if self.is_expected(tokens.ELSE, is_error = False):
             self.is_expected(tokens.LBRACE)
-            self.advance( )                
+            self.advance( )
             altbody = self.get_scope(tokens.RBRACE)
-        return astree.IfElse(cond,  body,  altbody)            
+        return astree.IfElse(cond,  body,  altbody)
 
     def get_array(self):
         self.advance( )
         expr = []
-        while True:
+        while not self.is_current(tokens.RBRACKET):
             expr.append(self.get_expression( ))
             if not self.is_expected(tokens.COMMA, is_error = False):
                 break
             self.advance( )
-        self.is_expected(tokens.RBRACKET)
+        if not self.is_current(tokens.RBRACKET):
+            self.is_expected(tokens.RBRACKET)
         return astree.Array(expr)
-    
+
     def get_index(self,  obj):
         self.advance( )
         expr = self.get_expression( )
@@ -244,7 +248,7 @@ class Parser(object):
             self.advance( )
         self.is_expected(tokens.RPAREN)
         return astree.Call(obj,  expr)
-        
+
     def get_return(self):
         self.advance( )
         expr = self.get_expression( )
@@ -257,7 +261,7 @@ class Parser(object):
         self.advance( )
         expr = self.get_expression( )
         return astree.Let(name,  expr)
-        
+
     def get_scope(self, stop_token):
         stmts = [ ]
         while not self.is_current(stop_token):
@@ -274,7 +278,7 @@ class Parser(object):
                 stmts.append(stmt)
             self.advance( )
         return stmts
-        
+
     def get(self):
         return astree.Scope(self.get_scope(tokens.EOF))
 
