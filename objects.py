@@ -6,6 +6,7 @@ class Type:
     BOOLEAN  = 'bool'
     ARRAY    = 'array'
     FUNCTION = 'function'
+    BUILTIN  = 'builtin'
 
 class Base(object):
     def value(self):
@@ -86,5 +87,20 @@ class Function(Base):
         return '<function>'
     def type(self):
         return Type.FUNCTION
+
+class Builtin(Base):
+
+    def __init__(self, env):
+        self.environ = env
+    def env(self):
+        return self.environ
+
+    def call(self,  params):
+        pass
+
+    def __str__(self):
+        return '<builtin>'
+    def type(self):
+        return Type.BUILTIN
 
 

@@ -109,6 +109,11 @@ class Walker(object):
                 call_env.set( expr.params( )[call_par].value( ), next_res )
                 call_par += 1
             return self.eval_next(expr.body( ), call_env )
+        elif isinstance(expr, objects.Builtin):
+            params = []
+            for id in node.params( ):
+                params.append(self.eval_next( id, env ))
+            return expr.call(params)
         else:
             raise ExecutionError("'{0}' is tot a callable object".format(expr.type( ) ) )
 
