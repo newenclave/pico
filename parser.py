@@ -257,12 +257,13 @@ class Parser(object):
     def get_call(self,  obj):
         self.advance( )
         expr = []
-        while True:
+        while not self.is_current(tokens.RPAREN):
             expr.append(self.get_expression( ))
             if not self.is_expected(tokens.COMMA, is_error = False):
                 break
             self.advance( )
-        self.is_expected(tokens.RPAREN)
+        if not self.is_current(tokens.RPAREN):
+            self.is_expected(tokens.RPAREN)
         return astree.Call(obj,  expr)
 
     def get_return(self):
