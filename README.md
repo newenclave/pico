@@ -13,7 +13,7 @@ numbers, strings, arrays, tables, functions as first class citizens
     let t = {true: "True", false: "False"}
 ```
 
-Also is supports built-in functions
+Also it supports built-in functions
 
 ```swift
     let s = "Hello, world!"
