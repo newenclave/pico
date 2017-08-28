@@ -28,6 +28,7 @@ class Walker(object):
             (objects.Type.ARRAY,   tokens.PLUS['name'],     objects.Type.ARRAY):    objects.Type.ARRAY,
 
             (objects.Type.INTEGER, tokens.ASTERISK['name'], objects.Type.INTEGER):  objects.Type.INTEGER,
+            (objects.Type.STRING,  tokens.ASTERISK['name'], objects.Type.INTEGER):  objects.Type.STRING,
 
             (objects.Type.INTEGER, tokens.SLASH['name'],    objects.Type.INTEGER):  objects.Type.INTEGER,
 
