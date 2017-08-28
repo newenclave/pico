@@ -188,6 +188,7 @@ class Walker(object):
             cur_env = env.create_child( )
             return self.eval_scope(astree.Scope(node.body( )), cur_env)
         elif len(node.alt( )) > 0:
+            cur_env = env.create_child( )
             return self.eval_scope(astree.Scope(node.alt( )), cur_env)
 
     def eval_let(self, node, env):

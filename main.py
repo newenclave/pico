@@ -5,7 +5,17 @@ import walker
 import builtin
 
 test = '''
-    let a = {1: 3423}
+let fib = fn( n ) {
+    let impl = fn( a, b, n ) {
+        if(n > 0) {
+            impl( b, a + b, n -1 )
+        } else {
+            a
+        }
+    }
+    impl(0, 1, n)
+}
+fib(100)
 '''
 
 def REPL():
@@ -26,6 +36,9 @@ def REPL():
 
 if __name__ == '__main__':
     REPL( )
-    #parse = parser.Parser(test)
-    #print(parse.get( ))
+    #e = env.Environment( )
+    #res = parser.Parser(test).get( )
+    #wlk = walker.Walker(res, e)
+    #print(wlk.eval( ))
+
 
