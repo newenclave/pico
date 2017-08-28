@@ -11,7 +11,8 @@ test = '''
 
 def REPL():
     e = env.Environment( )
-    e.set('len',  builtin.Len(e))
+    e.set('len',   builtin.Len(e))
+    e.set('print', builtin.Print(e))
     while True:
         try:
             str = input('>>> ')

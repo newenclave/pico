@@ -8,8 +8,16 @@ class BuiltinError(Exception):
 
 class Len(objects.Builtin):
     def __init__(self, env):
-        super(Len,  self).__init__(env)
+        super(Len, self).__init__(env)
     def call(self, params):
         if len(params) < 1:
             raise BuiltinError('len call with empty paramenets')
         return objects.Number(len(params[0].value( )))
+
+class Print(objects.Builtin):
+    def __init__(self, env):
+        super(Print, self).__init__(env)
+    def call(self, params):
+        for i in params:
+            print( i, ' ',  end='' )
+        print()
