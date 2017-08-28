@@ -4,14 +4,8 @@ import environment as env
 import walker
 
 test = '''
-    let a = 1000
-    let b = "String"
-    let c = fn(){ b + b }
-    let d = fn(a, b){ a + b }
-    let e = [1, 2, 3, d, b, a]
-    let f = e[0]
-    let g = d(100, 200)
-    return -23452345
+    if(1<1) { } else { }
+    let a = 100
 '''
 
 def REPL():
@@ -30,4 +24,6 @@ def REPL():
 
 if __name__ == '__main__':
     REPL( )
+    #parse = parser.Parser(test)
+    #print(parse.get( ))
 

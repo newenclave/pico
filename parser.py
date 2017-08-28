@@ -212,13 +212,12 @@ class Parser(object):
         self.advance( )
 
         body = self.get_scope(tokens.RBRACE)
-        self.advance( )
         altbody = []
         if self.is_expected(tokens.ELSE, is_error = False):
             self.is_expected(tokens.LBRACE)
             self.advance( )
             altbody = self.get_scope(tokens.RBRACE)
-        return astree.IfElse(cond,  body,  altbody)
+        return astree.IfElse(cond, body, altbody)
 
     def get_array(self):
         self.advance( )

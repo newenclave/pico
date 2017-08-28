@@ -54,6 +54,7 @@ class Walker(object):
             return objects.Number(value)
         elif typename == objects.Type.BOOLEAN:
             return objects.Boolean(value)
+        raise ExecutionError( "Attempt to create an object that is not in the list '{0}'".format(typename) )
 
     def to_boolean(self, obj):
         if obj.type( ) == objects.Type.BOOLEAN:
@@ -83,6 +84,15 @@ class Walker(object):
         for a in node.value( ):
             expr.append(self.eval_next(a, env))
         return objects.Array(expr)
+
+    def eval_index(self, node, env):
+        obj = self.eval_next(node.value( ), env)
+        if not isinstance(obj,  objects.Array):
+            raise ExecutionError("Index can not be obtained from '{0}'".format(obj.type( )))
+        id = self.eval_next(node.index( ), env)
+        if not isinstance(id, objects.Number):
+            raise ExecutionError("Bad index type '{0}' for '{1}'".format(id.type( ), obj.type( )))
+        return obj.value( )[id.value( )]
 
     def eval_fn(self, node, env):
         return objects.Function(node.idents, astree.Scope(node.body), env)
@@ -147,6 +157,14 @@ class Walker(object):
             raise ExecutionError("Infix operation '{0}' is not defined for '{1}' and '{2}'".
                 format(node.operator( ), left.type( ), right.type( ) ) )
 
+    def eval_if(self, node, env):
+        cond = self.eval_next(node.cond( ), env)
+        if self.to_boolean(cond):
+            cur_env = env.create_child( )
+            return self.eval_scope(astree.Scope(node.body( )), cur_env)
+        elif len(node.alt( )) > 0:
+            return self.eval_scope(astree.Scope(node.alt( )), cur_env)
+
     def eval_let(self, node, env):
         env.set(node.ident, self.eval_next(node.expr, env))
 
@@ -190,6 +208,9 @@ class Walker(object):
         elif isinstance(node, astree.Array):
             res = self.eval_array(node, env)
 
+        elif isinstance(node, astree.Index):
+            res = self.eval_index(node, env)
+
         elif isinstance(node, astree.Prefix):
             res = self.eval_prefix(node, env)
 
@@ -201,6 +222,10 @@ class Walker(object):
 
         elif isinstance(node, astree.Call):
             res = self.eval_call(node, env)
+
+        elif isinstance(node, astree.IfElse):
+            res = self.eval_if(node, env)
+
         return res
 
     def eval(self):

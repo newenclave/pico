@@ -98,7 +98,7 @@ class Infix(Node):
         return self.oper
 
     def __str__(self):
-        return '({0}{1}{2})'.format( self.left,  self.oper, self.right )
+        return '({0}{1}{2})'.format( self.left(), self.oper, self.right() )
 
 class Function(Node):
     def __init__(self,  idents,  body):
@@ -120,18 +120,26 @@ class Function(Node):
 
 class IfElse(Node):
     def __init__(self,  cond, body,  altbody):
-        self.cond    = cond
-        self.body    = body
-        self.altbody = altbody
+        self._cond    = cond
+        self._body    = body
+        self._altbody = altbody
+
+    def cond(self):
+        return self._cond
+    def body(self):
+        return self._body
+    def alt(self):
+        return self._altbody
+
     def __str__(self):
-        res = 'if(' + str(self.cond) + ') {\n'
-        for i in self.body:
+        res = 'if(' + str(self._cond) + ') {\n'
+        for i in self._body:
             res += str(i)
             res += ';\n'
         res += '} '
-        if len(self.altbody) > 0:
+        if len(self._altbody) > 0:
             res += 'else {\n'
-            for i in self.altbody:
+            for i in self._altbody:
                 res += str(i)
                 res += ';\n'
             res += '} '
@@ -150,10 +158,10 @@ class Call(Node):
     def __str__(self):
         res = str(self.obj) + '('
         size = 0
-        for i in self.params:
+        for i in self.param:
             res += str(i)
             size += 1
-            if size != len(self.params):
+            if size != len(self.param):
                 res += ', '
         res += ')'
         return res
@@ -180,6 +188,13 @@ class Index(Node):
     def __init__(self, obj,  param):
         self.obj     = obj
         self.param   = param
+
+    def value(self):
+        return self.obj
+
+    def index(self):
+        return self.param
+
     def __str__(self):
         res = str(self.obj) + '[' + str(self.param) + ']'
         return res
