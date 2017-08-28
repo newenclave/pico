@@ -1,2 +1,5 @@
 .eric6project
 __pycache__
+*.pyc
+
+
