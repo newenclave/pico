@@ -199,7 +199,7 @@ class Walker(object):
         if self.to_boolean(cond):
             cur_env = env.create_child( )
             return self.eval_scope(node.body( ), cur_env)
-        elif len(node.alt( )) > 0:
+        elif len(node.alt( ).value( )) > 0:
             cur_env = env.create_child( )
             return self.eval_scope(node.alt( ), cur_env)
 

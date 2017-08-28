@@ -115,10 +115,9 @@ class Function(Node):
             size += 1
             if size != len(self.idents):
                 res += ', '
-        res += ') {\n'
-        for i in self.body:
-            res = res + str(i) + ';\n'
-        res = res + '}'
+        res += ') '
+        res += self.body
+        
         return res
 
 class IfElse(Node):
@@ -135,17 +134,11 @@ class IfElse(Node):
         return self._altbody
 
     def __str__(self):
-        res = 'if(' + str(self._cond) + ') {\n'
-        for i in self._body:
-            res += str(i)
-            res += ';\n'
-        res += '} '
-        if len(self._altbody) > 0:
-            res += 'else {\n'
-            for i in self._altbody:
-                res += str(i)
-                res += ';\n'
-            res += '} '
+        res = 'if(' + str(self._cond) + ') '
+        res += self._body
+        if len(self._altbody.value( )) > 0:
+            res += 'else '
+            res += self._altbody
         return res
 
 class Call(Node):
