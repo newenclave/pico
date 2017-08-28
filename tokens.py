@@ -56,4 +56,4 @@ class Tokenizer(object):
             size = size + 1
             if 'value' in tmp:
                 result = tmp
-        return (result['value'],  size) if result else None
+        return (result['value'], size) if result else None
