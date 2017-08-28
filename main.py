@@ -18,7 +18,7 @@ let fib = fn( n ) {
 fib(100)
 '''
 
-def REPL():
+def REPL( ):
     e = env.Environment( )
     e.set('len',   builtin.Len(e))
     e.set('print', builtin.Print(e))
