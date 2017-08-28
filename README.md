@@ -5,10 +5,10 @@
 numbers, strings, arrays, tables, functions as first class citizens
 
 ```swift
-    let a = 100
+    let a = [1, 2, 3, "end"]
     let b = 200
     let sum = fn(x, y) { x + y }
-    let c = sum(a, b)
+    let c = sum(1000, b)
     let s = "This is a string"
     let t = {true: "True", false: "False"}
 ```
