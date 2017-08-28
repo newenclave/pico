@@ -37,7 +37,7 @@ class Tokenizer(object):
     def __init__(self):
         self.values = { }
 
-    def set( self,  key,  value ):
+    def set( self, key, value ):
         tmp  = self.values
         for i in key:
             if not i in tmp:
@@ -46,7 +46,7 @@ class Tokenizer(object):
         tmp['value'] = value
         return tmp
 
-    def get(self,  key,  greedy = True): # remove greedy value
+    def get( self, key ):
         tmp    = self.values
         size   = 0
         result = None
@@ -56,5 +56,4 @@ class Tokenizer(object):
             size = size + 1
             if 'value' in tmp:
                 result = tmp
-                if not greedy: break
         return (result['value'],  size) if result else None
