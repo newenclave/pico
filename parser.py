@@ -51,6 +51,8 @@ class Parser(object):
             tokens.NOT_EQ['name']:      self.get_infix,
             tokens.LESS['name']:        self.get_infix,
             tokens.GREATER['name']:     self.get_infix,
+            tokens.LESS_EQ['name']:     self.get_infix,
+            tokens.GREATER_EQ['name']:  self.get_infix,
 
             tokens.LBRACKET['name']:    self.get_index,
             tokens.LPAREN['name']:      self.get_call,
@@ -58,16 +60,18 @@ class Parser(object):
 
     def precedence_for(self, token):
         vals = {
-            tokens.EQ['name']:       self.precedence.EQUALS,
-            tokens.NOT_EQ['name']:   self.precedence.EQUALS,
-            tokens.LESS['name']:     self.precedence.LESSGREATER,
-            tokens.GREATER['name']:  self.precedence.LESSGREATER,
-            tokens.MINUS['name']:    self.precedence.SUM,
-            tokens.PLUS['name']:     self.precedence.SUM,
-            tokens.ASTERISK['name']: self.precedence.PRODUCT,
-            tokens.SLASH['name']:    self.precedence.PRODUCT,
-            tokens.LPAREN['name']:   self.precedence.CALL,
-            tokens.LBRACKET['name']: self.precedence.INDEX,
+            tokens.EQ['name']:          self.precedence.EQUALS,
+            tokens.NOT_EQ['name']:      self.precedence.EQUALS,
+            tokens.LESS['name']:        self.precedence.LESSGREATER,
+            tokens.GREATER['name']:     self.precedence.LESSGREATER,
+            tokens.LESS_EQ['name']:     self.precedence.LESSGREATER,
+            tokens.GREATER_EQ['name']:  self.precedence.LESSGREATER,
+            tokens.MINUS['name']:       self.precedence.SUM,
+            tokens.PLUS['name']:        self.precedence.SUM,
+            tokens.ASTERISK['name']:    self.precedence.PRODUCT,
+            tokens.SLASH['name']:       self.precedence.PRODUCT,
+            tokens.LPAREN['name']:      self.precedence.CALL,
+            tokens.LBRACKET['name']:    self.precedence.INDEX,
         }
 
         if token['name'] in vals:
@@ -201,7 +205,7 @@ class Parser(object):
         self.is_expected(tokens.LBRACE) # ) -> {
         self.advance( )                 # { -> ..
         body = self.get_scope(tokens.RBRACE)
-        return astree.Function(idents,  body)
+        return astree.Function(idents, astree.Scope(body))
 
     def get_if(self):
         self.is_expected(tokens.LPAREN) # if -> (
@@ -218,7 +222,7 @@ class Parser(object):
             self.is_expected(tokens.LBRACE)
             self.advance( )
             altbody = self.get_scope(tokens.RBRACE)
-        return astree.IfElse(cond, body, altbody)
+        return astree.IfElse(cond, astree.Scope(body), astree.Scope(altbody))
 
     def get_array(self):
         self.advance( )

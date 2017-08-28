@@ -12,6 +12,8 @@ EQ          = {'name': '==',        'ident': False}
 NOT_EQ      = {'name': '!=',        'ident': False}
 LESS        = {'name': '<',         'ident': False}
 GREATER     = {'name': '>',         'ident': False}
+LESS_EQ     = {'name': '<=',        'ident': False}
+GREATER_EQ  = {'name': '>=',        'ident': False}
 PLUS        = {'name': '+',         'ident': False}
 MINUS       = {'name': '-',         'ident': False}
 ASTERISK    = {'name': '*',         'ident': False}

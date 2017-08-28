@@ -21,6 +21,8 @@ class Lexer(object):
         self.tknz.set('=',          tokens.ASSIGN)
         self.tknz.set('<',          tokens.LESS)
         self.tknz.set('>',          tokens.GREATER)
+        self.tknz.set('<=',         tokens.LESS_EQ)
+        self.tknz.set('>=',         tokens.GREATER_EQ)
         self.tknz.set('==',         tokens.EQ)
         self.tknz.set('!=',         tokens.NOT_EQ)
         self.tknz.set('+',          tokens.PLUS)

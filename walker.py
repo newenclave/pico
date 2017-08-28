@@ -41,9 +41,15 @@ class Walker(object):
             (objects.Type.INTEGER, tokens.LESS['name'],     objects.Type.INTEGER):  objects.Type.BOOLEAN,
             (objects.Type.STRING,  tokens.LESS['name'],     objects.Type.STRING):   objects.Type.BOOLEAN,
             (objects.Type.ARRAY,   tokens.LESS['name'],     objects.Type.ARRAY):    objects.Type.BOOLEAN,
-            (objects.Type.INTEGER, tokens.GREATER['name'],  objects.Type.INTEGER):  objects.Type.BOOLEAN,
-            (objects.Type.STRING,  tokens.GREATER['name'],  objects.Type.STRING):   objects.Type.BOOLEAN,
-            (objects.Type.ARRAY,   tokens.GREATER['name'],  objects.Type.ARRAY):    objects.Type.BOOLEAN,
+            (objects.Type.INTEGER, tokens.LESS_EQ['name'],     objects.Type.INTEGER):  objects.Type.BOOLEAN,
+            (objects.Type.STRING,  tokens.LESS_EQ['name'],     objects.Type.STRING):   objects.Type.BOOLEAN,
+            (objects.Type.ARRAY,   tokens.LESS_EQ['name'],     objects.Type.ARRAY):    objects.Type.BOOLEAN,
+            (objects.Type.INTEGER, tokens.GREATER['name'],     objects.Type.INTEGER):  objects.Type.BOOLEAN,
+            (objects.Type.STRING,  tokens.GREATER['name'],     objects.Type.STRING):   objects.Type.BOOLEAN,
+            (objects.Type.ARRAY,   tokens.GREATER['name'],     objects.Type.ARRAY):    objects.Type.BOOLEAN,
+            (objects.Type.INTEGER, tokens.GREATER_EQ['name'],  objects.Type.INTEGER):  objects.Type.BOOLEAN,
+            (objects.Type.STRING,  tokens.GREATER_EQ['name'],  objects.Type.STRING):   objects.Type.BOOLEAN,
+            (objects.Type.ARRAY,   tokens.GREATER_EQ['name'],  objects.Type.ARRAY):    objects.Type.BOOLEAN,
         }
 
     def new_object(self, typename, value):
@@ -115,7 +121,7 @@ class Walker(object):
             raise ExecutionError("Index can not be obtained from '{0}'".format(obj.type( )))
 
     def eval_fn(self, node, env):
-        return objects.Function(node.idents, astree.Scope(node.body), env)
+        return objects.Function(node.idents, node.body, env)
 
     def eval_call(self, node, env):
         expr = self.eval_next(node.value( ),  env)
@@ -175,6 +181,10 @@ class Walker(object):
                 return self.new_object(obj_type, left.value( ) < right.value( ))
             elif node.operator( ) == '>':
                 return self.new_object(obj_type, left.value( ) > right.value( ))
+            elif node.operator( ) == '<=':
+                return self.new_object(obj_type, left.value( ) < right.value( ))
+            elif node.operator( ) == '>=':
+                return self.new_object(obj_type, left.value( ) > right.value( ))
             else:
                 raise ExecutionError("Invalid infix operation '{0}' for '{1}' and '{2}'".
                     format(node.operator( ), left.type( ), right.type( ) ) )
@@ -186,10 +196,10 @@ class Walker(object):
         cond = self.eval_next(node.cond( ), env)
         if self.to_boolean(cond):
             cur_env = env.create_child( )
-            return self.eval_scope(astree.Scope(node.body( )), cur_env)
+            return self.eval_scope(node.body( ), cur_env)
         elif len(node.alt( )) > 0:
             cur_env = env.create_child( )
-            return self.eval_scope(astree.Scope(node.alt( )), cur_env)
+            return self.eval_scope(node.alt( ), cur_env)
 
     def eval_let(self, node, env):
         env.set(node.ident, self.eval_next(node.expr, env))
