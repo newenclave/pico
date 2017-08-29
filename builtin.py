@@ -22,6 +22,6 @@ class Print(objects.Builtin):
     def call(self, params):
         for i in params:
             print( i, ' ',  end='' )
-        print()
+        print( )
     def __str__(self):
         return "<builtin print>"

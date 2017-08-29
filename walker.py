@@ -88,15 +88,9 @@ class Walker(object):
         return objects.String(node.value( ))
 
     def eval_table(self, node, env):
-        def is_hashable(obj):
-            return obj.type( ) == objects.Type.BOOLEAN  \
-                or obj.type( ) == objects.Type.INTEGER  \
-                or obj.type( ) == objects.Type.STRING
         expr = { }
         for a in node.value( ):
             key = self.eval_next(a[0], env)
-            if not is_hashable(key):
-                raise ExecutionError("Object '{0}' is not hashable.".format(key.type( ) ))
             val = self.eval_next(a[1], env)
             expr[key] = val
         return objects.Table(expr)
@@ -144,7 +138,7 @@ class Walker(object):
         else:
             raise ExecutionError("'{0}' is tot a callable object".format(expr.type( ) ) )
         return res if not isinstance(res,  objects.Return) else res.value( )
- 
+
     def eval_prefix(self, node, env):
         expr = self.eval_next(node.value( ), env)
         cort = (node.operator( ), expr.type( ))
@@ -233,7 +227,7 @@ class Walker(object):
 
         elif isinstance(node, astree.Return):
             res = self.eval_return(node, env)
-            
+
         elif isinstance(node, astree.Number):
             res = self.eval_number(node, env)
 
@@ -269,7 +263,7 @@ class Walker(object):
 
         elif isinstance(node, astree.IfElse):
             res = self.eval_if(node, env)
-        
+
         return res
 
     def eval(self):

@@ -23,16 +23,18 @@ def REPL( ):
     e.set('len',   builtin.Len(e))
     e.set('print', builtin.Print(e))
     while True:
-        #try:
+        try:
             str = input('>>> ')
             if str == 'exit':
                 break
             parse = parser.Parser(str)
             res = parse.get( )
             wlk = walker.Walker(res, e)
-            print(wlk.eval( ))
-        #except Exception as ex:
-        #    print("Exception: ",  ex)
+            res = wlk.eval( )
+            if res:
+                print(res)
+        except Exception as ex:
+            print("Exception: ",  ex)
 
 if __name__ == '__main__':
     REPL( )
