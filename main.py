@@ -15,7 +15,7 @@ let fib = fn( n ) {
     }
     impl(0, 1, n)
 }
-fib(100)
+fib(140)
 '''
 
 def REPL( ):
@@ -35,10 +35,10 @@ def REPL( ):
         #    print("Exception: ",  ex)
 
 if __name__ == '__main__':
-    #REPL( )
-    e = env.Environment( )
-    res = parser.Parser(test).get( )
-    wlk = walker.Walker(res, e)
-    print(wlk.eval( ))
+    REPL( )
+    #e = env.Environment( )
+    #res = parser.Parser(test).get( )
+    #wlk = walker.Walker(res, e)
+    #print(wlk.eval( ))
 
 

@@ -13,6 +13,8 @@ class Len(objects.Builtin):
         if len(params) < 1:
             raise BuiltinError('len call with empty paramenets')
         return objects.Number(len(params[0].value( )))
+    def __str__(self):
+        return "<builtin len>"
 
 class Print(objects.Builtin):
     def __init__(self, env):
@@ -21,3 +23,5 @@ class Print(objects.Builtin):
         for i in params:
             print( i, ' ',  end='' )
         print()
+    def __str__(self):
+        return "<builtin print>"
