@@ -25,3 +25,14 @@ class Print(objects.Builtin):
         print( )
     def __str__(self):
         return "<builtin print>"
+
+class Input(objects.Builtin):
+    def __init__(self, env):
+        super(Input, self).__init__(env)
+    def call(self, params):
+        for i in params:
+            print( i, ' ',  end='' )
+        return objects.String(input( ))
+    def __str__(self):
+        return "<builtin input>"
+
