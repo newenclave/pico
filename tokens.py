@@ -9,10 +9,10 @@ class Value(object):
         return self.name_
     def __hash__(self):
         return hash(self.name_)
-    def __str__(self):
-        return self.name_
     def __eq__(self, other):
         return self.name_ == other.name( )
+    def __str__(self):
+        return self.name_
 
 LET         = Value( 'let',      ident = True )
 RETURN      = Value( 'return',   ident = True )
