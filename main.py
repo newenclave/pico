@@ -15,9 +15,7 @@ let fib = fn( n ) {
     }
     impl(0, 1, n)
 }
-fib(140)
-let a = input("Enter: ")
-print( len(a) )
+print(fib(100))
 '''
 
 def REPL( ):
