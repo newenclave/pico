@@ -23,71 +23,71 @@ class Parser(object):
     def __init__(self,  input):
         lex = lexer.Lexer( )
         self.tokens = lex.get(input)
-        self.tokens.append({ 'token': tokens.EOF, 'literal': 'EOF'})
+        self.tokens.append(lexer.Token(tokens.EOF, 'EOF'))
         self.current_id = 0
         self.peek_id = 1 if len(self.tokens) > 1 else 0
 
         self.nuds = {
-            tokens.LPAREN['name']:   self.get_paren,
-            tokens.IDENT['name']:    self.get_ident,
-            tokens.NUMBER['name']:   self.get_number,
-            tokens.STRING['name']:   self.get_string,
-            tokens.TRUE['name']:     self.get_bool,
-            tokens.FALSE['name']:    self.get_bool,
-            tokens.BANG['name']:     self.get_prefix,
-            tokens.MINUS['name']:    self.get_prefix,
-            tokens.FN['name']:       self.get_fn,
-            tokens.IF['name']:       self.get_if,
-            tokens.LBRACKET['name']: self.get_array,
-            tokens.LBRACE['name']:   self.get_table,
+            tokens.LPAREN:   self.get_paren,
+            tokens.IDENT:    self.get_ident,
+            tokens.NUMBER:   self.get_number,
+            tokens.STRING:   self.get_string,
+            tokens.TRUE:     self.get_bool,
+            tokens.FALSE:    self.get_bool,
+            tokens.BANG:     self.get_prefix,
+            tokens.MINUS:    self.get_prefix,
+            tokens.FN:       self.get_fn,
+            tokens.IF:       self.get_if,
+            tokens.LBRACKET: self.get_array,
+            tokens.LBRACE:   self.get_table,
 
         }
         self.leds = {
-            tokens.PLUS['name']:        self.get_infix,
-            tokens.MINUS['name']:       self.get_infix,
-            tokens.ASTERISK['name']:    self.get_infix,
-            tokens.SLASH['name']:       self.get_infix,
-            tokens.EQ['name']:          self.get_infix,
-            tokens.NOT_EQ['name']:      self.get_infix,
-            tokens.LESS['name']:        self.get_infix,
-            tokens.GREATER['name']:     self.get_infix,
-            tokens.LESS_EQ['name']:     self.get_infix,
-            tokens.GREATER_EQ['name']:  self.get_infix,
+            tokens.PLUS:        self.get_infix,
+            tokens.MINUS:       self.get_infix,
+            tokens.ASTERISK:    self.get_infix,
+            tokens.SLASH:       self.get_infix,
+            tokens.EQ:          self.get_infix,
+            tokens.NOT_EQ:      self.get_infix,
+            tokens.LESS:        self.get_infix,
+            tokens.GREATER:     self.get_infix,
+            tokens.LESS_EQ:     self.get_infix,
+            tokens.GREATER_EQ:  self.get_infix,
 
-            tokens.LBRACKET['name']:    self.get_index,
-            tokens.LPAREN['name']:      self.get_call,
+            tokens.LBRACKET:    self.get_index,
+            tokens.LPAREN:      self.get_call,
         }
 
     def precedence_for(self, token):
         vals = {
-            tokens.EQ['name']:          self.precedence.EQUALS,
-            tokens.NOT_EQ['name']:      self.precedence.EQUALS,
-            tokens.LESS['name']:        self.precedence.LESSGREATER,
-            tokens.GREATER['name']:     self.precedence.LESSGREATER,
-            tokens.LESS_EQ['name']:     self.precedence.LESSGREATER,
-            tokens.GREATER_EQ['name']:  self.precedence.LESSGREATER,
-            tokens.MINUS['name']:       self.precedence.SUM,
-            tokens.PLUS['name']:        self.precedence.SUM,
-            tokens.ASTERISK['name']:    self.precedence.PRODUCT,
-            tokens.SLASH['name']:       self.precedence.PRODUCT,
-            tokens.LPAREN['name']:      self.precedence.CALL,
-            tokens.LBRACKET['name']:    self.precedence.INDEX,
+            tokens.EQ:          self.precedence.EQUALS,
+            tokens.NOT_EQ:      self.precedence.EQUALS,
+            tokens.LESS:        self.precedence.LESSGREATER,
+            tokens.GREATER:     self.precedence.LESSGREATER,
+            tokens.LESS_EQ:     self.precedence.LESSGREATER,
+            tokens.GREATER_EQ:  self.precedence.LESSGREATER,
+            tokens.MINUS:       self.precedence.SUM,
+            tokens.PLUS:        self.precedence.SUM,
+            tokens.ASTERISK:    self.precedence.PRODUCT,
+            tokens.SLASH:       self.precedence.PRODUCT,
+            tokens.LPAREN:      self.precedence.CALL,
+            tokens.LBRACKET:    self.precedence.INDEX,
         }
 
-        if token['name'] in vals:
-            return vals[token['name']]
+        if token in vals:
+            return vals[token]
         else:
             return self.precedence.LOWEST
 
     def token_nud(self,  token):
-        if token['name'] in self.nuds:
-            return self.nuds[token['name']]
+        if token in self.nuds:
+            return self.nuds[token]
         else:
             return None
 
     def token_led(self,  token):
-        if token['name'] in self.leds:
-            return self.leds[token['name']]
+        if token in self.leds:
+            return self.leds[token]
         else:
             return None
 
@@ -99,29 +99,29 @@ class Parser(object):
     def current(self):
         return self.tokens[self.current_id]
 
-    def current_tok(self):
-        return self.current( )['token']
+    def current_inf(self):
+        return self.current( ).value( )
 
     def current_lit(self):
-        return self.current( )['literal']
+        return self.current( ).literal( )
 
     def peek(self):
         return self.tokens[self.peek_id]
 
-    def peek_tok(self):
-        return self.peek( )['token']
+    def peek_inf(self):
+        return self.peek( ).value( )
 
     def peek_precedence(self):
-        return self.precedence_for(self.peek_tok( ))
+        return self.precedence_for(self.peek_inf( ))
 
     def eof(self):
         return self.is_current(tokens.EOF)
 
     def is_current(self, token):
-        return self.current( )['token'] == token
+        return self.current_inf( ) == token
 
     def is_peek(self, token):
-        return self.peek( )['token'] == token
+        return self.peek_inf( ) == token
 
     def is_expected( self, token, is_error = True ):
         if self.is_peek(token):
@@ -129,8 +129,8 @@ class Parser(object):
             return True
         elif is_error:
             raise ParserError('Unexpecteded token "' + \
-                  self.peek_tok( )['name'] + '". ' + \
-                  'expecteded token to be "' + token['name'] + '"')
+                  self.peek_inf( ).name( ) + '". ' + \
+                  'expecteded token to be "' + token.name( ) + '"')
 
         return False
 
@@ -150,14 +150,14 @@ class Parser(object):
         return astree.Boolean(self.is_current(tokens.TRUE))
 
     def get_prefix( self ):
-        oper = self.current_tok( )['name']
+        oper = self.current_inf( )
         self.advance( )
         expr = self.get_expression( prec = self.precedence.PREFIX )
         return astree.Prefix(oper,  expr)
 
     def get_infix( self,  left ):
-        oper = self.current_lit( )
-        current_precedence = self.precedence_for(self.current_tok( ))
+        oper = self.current_inf( )
+        current_precedence = self.precedence_for(self.current_inf( ))
         self.advance( )
         right = self.get_expression( prec = current_precedence )
         return astree.Infix(oper, left, right)
@@ -169,20 +169,20 @@ class Parser(object):
         return res
 
     def get_expression(self, prec = precedence.LOWEST ):
-        nud = self.token_nud(self.current_tok( ))
+        nud = self.token_nud(self.current_inf( ))
         if not nud:
             raise ParserError( 'prefix function '
                                'for {0} is not defined'.
-                               format(self.current_tok( )) )
+                               format(self.current_inf( )) )
         left = nud( )
         pp = self.peek_precedence( )
         while (not self.is_peek(tokens.SEMICOLON)) and (prec < pp):
-            ptok = self.peek_tok( )
+            ptok = self.peek_inf( )
             led = self.token_led(ptok)
             if not led:
                 raise ParserError( 'infix function '
                                    'for {0} is not defined'.
-                                    format(self.peek_tok( )) )
+                                    format(self.peek_inf( )) )
             self.advance( )
             left = led(left)
             pp = self.peek_precedence( )
@@ -227,18 +227,22 @@ class Parser(object):
     def get_array(self):
         self.advance( )
         expr = []
+        if self.is_current(tokens.RBRACKET):
+            astree.Array(expr)
         while not self.is_current(tokens.RBRACKET):
             expr.append(self.get_expression( ))
             if not self.is_expected(tokens.COMMA, is_error = False):
                 break
             self.advance( )
-        if not self.is_current(tokens.RBRACKET):
-            self.is_expected(tokens.RBRACKET)
+        self.is_expected(tokens.RBRACKET)
         return astree.Array(expr)
 
     def get_table(self):
         self.advance( )
         expr = [ ]
+        if self.is_current(tokens.RBRACE):
+            return astree.Table(expr)
+
         while not self.is_current(tokens.RBRACE):
             key = self.get_expression( )
             self.is_expected(tokens.COLON)
@@ -248,8 +252,7 @@ class Parser(object):
             if not self.is_expected(tokens.COMMA, is_error = False):
                 break
             self.advance( )
-        if not self.is_current(tokens.RBRACE):
-            self.is_expected(tokens.RBRACE)
+        self.is_expected(tokens.RBRACE)
         return astree.Table(expr)
 
     def get_index(self,  obj):
@@ -259,16 +262,19 @@ class Parser(object):
         return astree.Index(obj,  expr)
 
     def get_call(self,  obj):
-        self.advance( )
         expr = []
+        self.advance( )
+        if self.is_current(tokens.RPAREN):
+            return astree.Call(obj, expr)
+
         while not self.is_current(tokens.RPAREN):
             expr.append(self.get_expression( ))
             if not self.is_expected(tokens.COMMA, is_error = False):
                 break
             self.advance( )
-        if not self.is_current(tokens.RPAREN):
-            self.is_expected(tokens.RPAREN)
-        return astree.Call(obj,  expr)
+
+        self.is_expected(tokens.RPAREN)
+        return astree.Call(obj, expr)
 
     def get_return(self):
         self.advance( )

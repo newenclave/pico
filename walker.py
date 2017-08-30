@@ -16,41 +16,41 @@ class Walker(object):
         self.env = env if env else environment.Environment( )
 
         self.oper_prefix = {
-            (tokens.BANG['name'],  objects.Type.BOOLEAN): objects.Type.BOOLEAN,
-            (tokens.BANG['name'],  objects.Type.INTEGER): objects.Type.BOOLEAN,
-            (tokens.MINUS['name'], objects.Type.INTEGER): objects.Type.INTEGER,
+            (tokens.BANG,  objects.Type.BOOLEAN): objects.Type.BOOLEAN,
+            (tokens.BANG,  objects.Type.INTEGER): objects.Type.BOOLEAN,
+            (tokens.MINUS, objects.Type.INTEGER): objects.Type.INTEGER,
         }
 
         self.oper_infix = {
-            (objects.Type.INTEGER, tokens.MINUS['name'],        objects.Type.INTEGER):  objects.Type.INTEGER,
+            (objects.Type.INTEGER, tokens.MINUS,        objects.Type.INTEGER):  objects.Type.INTEGER,
 
-            (objects.Type.INTEGER, tokens.PLUS['name'],         objects.Type.INTEGER):  objects.Type.INTEGER,
-            (objects.Type.STRING,  tokens.PLUS['name'],         objects.Type.STRING):   objects.Type.STRING,
-            (objects.Type.ARRAY,   tokens.PLUS['name'],         objects.Type.ARRAY):    objects.Type.ARRAY,
+            (objects.Type.INTEGER, tokens.PLUS,         objects.Type.INTEGER):  objects.Type.INTEGER,
+            (objects.Type.STRING,  tokens.PLUS,         objects.Type.STRING):   objects.Type.STRING,
+            (objects.Type.ARRAY,   tokens.PLUS,         objects.Type.ARRAY):    objects.Type.ARRAY,
 
-            (objects.Type.INTEGER, tokens.ASTERISK['name'],     objects.Type.INTEGER):  objects.Type.INTEGER,
-            (objects.Type.STRING,  tokens.ASTERISK['name'],     objects.Type.INTEGER):  objects.Type.STRING,
+            (objects.Type.INTEGER, tokens.ASTERISK,     objects.Type.INTEGER):  objects.Type.INTEGER,
+            (objects.Type.STRING,  tokens.ASTERISK,     objects.Type.INTEGER):  objects.Type.STRING,
 
-            (objects.Type.INTEGER, tokens.SLASH['name'],        objects.Type.INTEGER):  objects.Type.INTEGER,
+            (objects.Type.INTEGER, tokens.SLASH,        objects.Type.INTEGER):  objects.Type.INTEGER,
 
-            (objects.Type.INTEGER, tokens.EQ['name'],           objects.Type.INTEGER):  objects.Type.BOOLEAN,
-            (objects.Type.STRING,  tokens.EQ['name'],           objects.Type.STRING):   objects.Type.BOOLEAN,
-            (objects.Type.ARRAY,   tokens.EQ['name'],           objects.Type.ARRAY):    objects.Type.BOOLEAN,
-            (objects.Type.INTEGER, tokens.NOT_EQ['name'],       objects.Type.INTEGER):  objects.Type.BOOLEAN,
-            (objects.Type.STRING,  tokens.NOT_EQ['name'],       objects.Type.STRING):   objects.Type.BOOLEAN,
-            (objects.Type.ARRAY,   tokens.NOT_EQ['name'],       objects.Type.ARRAY):    objects.Type.BOOLEAN,
-            (objects.Type.INTEGER, tokens.LESS['name'],         objects.Type.INTEGER):  objects.Type.BOOLEAN,
-            (objects.Type.STRING,  tokens.LESS['name'],         objects.Type.STRING):   objects.Type.BOOLEAN,
-            (objects.Type.ARRAY,   tokens.LESS['name'],         objects.Type.ARRAY):    objects.Type.BOOLEAN,
-            (objects.Type.INTEGER, tokens.LESS_EQ['name'],      objects.Type.INTEGER):  objects.Type.BOOLEAN,
-            (objects.Type.STRING,  tokens.LESS_EQ['name'],      objects.Type.STRING):   objects.Type.BOOLEAN,
-            (objects.Type.ARRAY,   tokens.LESS_EQ['name'],      objects.Type.ARRAY):    objects.Type.BOOLEAN,
-            (objects.Type.INTEGER, tokens.GREATER['name'],      objects.Type.INTEGER):  objects.Type.BOOLEAN,
-            (objects.Type.STRING,  tokens.GREATER['name'],      objects.Type.STRING):   objects.Type.BOOLEAN,
-            (objects.Type.ARRAY,   tokens.GREATER['name'],      objects.Type.ARRAY):    objects.Type.BOOLEAN,
-            (objects.Type.INTEGER, tokens.GREATER_EQ['name'],   objects.Type.INTEGER):  objects.Type.BOOLEAN,
-            (objects.Type.STRING,  tokens.GREATER_EQ['name'],   objects.Type.STRING):   objects.Type.BOOLEAN,
-            (objects.Type.ARRAY,   tokens.GREATER_EQ['name'],   objects.Type.ARRAY):    objects.Type.BOOLEAN,
+            (objects.Type.INTEGER, tokens.EQ,           objects.Type.INTEGER):  objects.Type.BOOLEAN,
+            (objects.Type.STRING,  tokens.EQ,           objects.Type.STRING):   objects.Type.BOOLEAN,
+            (objects.Type.ARRAY,   tokens.EQ,           objects.Type.ARRAY):    objects.Type.BOOLEAN,
+            (objects.Type.INTEGER, tokens.NOT_EQ,       objects.Type.INTEGER):  objects.Type.BOOLEAN,
+            (objects.Type.STRING,  tokens.NOT_EQ,       objects.Type.STRING):   objects.Type.BOOLEAN,
+            (objects.Type.ARRAY,   tokens.NOT_EQ,       objects.Type.ARRAY):    objects.Type.BOOLEAN,
+            (objects.Type.INTEGER, tokens.LESS,         objects.Type.INTEGER):  objects.Type.BOOLEAN,
+            (objects.Type.STRING,  tokens.LESS,         objects.Type.STRING):   objects.Type.BOOLEAN,
+            (objects.Type.ARRAY,   tokens.LESS,         objects.Type.ARRAY):    objects.Type.BOOLEAN,
+            (objects.Type.INTEGER, tokens.LESS_EQ,      objects.Type.INTEGER):  objects.Type.BOOLEAN,
+            (objects.Type.STRING,  tokens.LESS_EQ,      objects.Type.STRING):   objects.Type.BOOLEAN,
+            (objects.Type.ARRAY,   tokens.LESS_EQ,      objects.Type.ARRAY):    objects.Type.BOOLEAN,
+            (objects.Type.INTEGER, tokens.GREATER,      objects.Type.INTEGER):  objects.Type.BOOLEAN,
+            (objects.Type.STRING,  tokens.GREATER,      objects.Type.STRING):   objects.Type.BOOLEAN,
+            (objects.Type.ARRAY,   tokens.GREATER,      objects.Type.ARRAY):    objects.Type.BOOLEAN,
+            (objects.Type.INTEGER, tokens.GREATER_EQ,   objects.Type.INTEGER):  objects.Type.BOOLEAN,
+            (objects.Type.STRING,  tokens.GREATER_EQ,   objects.Type.STRING):   objects.Type.BOOLEAN,
+            (objects.Type.ARRAY,   tokens.GREATER_EQ,   objects.Type.ARRAY):    objects.Type.BOOLEAN,
         }
 
     def new_object(self, typename, value):
@@ -144,9 +144,9 @@ class Walker(object):
         cort = (node.operator( ), expr.type( ))
         if cort in self.oper_prefix:
             obj_type = self.oper_prefix[cort]
-            if node.operator( ) == '!':
+            if node.operator( ) == tokens.BANG:
                 return self.new_object(obj_type, not self.to_boolean(expr))
-            elif node.operator( ) == '-':
+            elif node.operator( ) == tokens.MINUS:
                 return self.new_object(obj_type, -1 * self.to_integer(expr))
             else:
                 raise ExecutionError("Invalid prefix operation '{0}' for '{1}'".
@@ -161,25 +161,25 @@ class Walker(object):
         cort = (left.type( ), node.operator( ), right.type( ))
         if cort in self.oper_infix:
             obj_type = self.oper_infix[cort]
-            if node.operator( ) == '+':
+            if node.operator( ) == tokens.PLUS:
                 return self.new_object(obj_type, left.value( ) + right.value( ))
-            elif node.operator( ) == '-':
+            elif node.operator( ) == tokens.MINUS:
                 return self.new_object(obj_type, left.value( ) - right.value( ))
-            elif node.operator( ) == '*':
+            elif node.operator( ) == tokens.ASTERISK:
                 return self.new_object(obj_type, left.value( ) * right.value( ))
-            elif node.operator( ) == '/':
+            elif node.operator( ) == tokens.SLASH:
                 return self.new_object(obj_type, left.value( ) / right.value( ))
-            elif node.operator( ) == '==':
+            elif node.operator( ) == tokens.EQ:
                 return self.new_object(obj_type, left.value( ) == right.value( ))
-            elif node.operator( ) == '!=':
+            elif node.operator( ) == tokens.NOT_EQ:
                 return self.new_object(obj_type, left.value( ) != right.value( ))
-            elif node.operator( ) == '<':
+            elif node.operator( ) == tokens.LESS:
                 return self.new_object(obj_type, left.value( ) < right.value( ))
-            elif node.operator( ) == '>':
+            elif node.operator( ) == tokens.GREATER:
                 return self.new_object(obj_type, left.value( ) > right.value( ))
-            elif node.operator( ) == '<=':
+            elif node.operator( ) == tokens.LESS_EQ:
                 return self.new_object(obj_type, left.value( ) <= right.value( ))
-            elif node.operator( ) == '>=':
+            elif node.operator( ) == tokens.GREATER_EQ:
                 return self.new_object(obj_type, left.value( ) >= right.value( ))
             else:
                 raise ExecutionError("Invalid infix operation '{0}' for '{1}' and '{2}'".

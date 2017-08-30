@@ -16,6 +16,8 @@ let fib = fn( n ) {
     impl(0, 1, n)
 }
 fib(140)
+let a = input("Enter: ")
+print( len(a) )
 '''
 
 def REPL( ):
@@ -40,6 +42,9 @@ def REPL( ):
 if __name__ == '__main__':
     REPL( )
     #e = env.Environment( )
+    #e.set('len',   builtin.Len(e))
+    #e.set('print', builtin.Print(e))
+    #e.set('input', builtin.Input(e))
     #res = parser.Parser(test).get( )
     #wlk = walker.Walker(res, e)
     #print(wlk.eval( ))

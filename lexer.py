@@ -6,6 +6,17 @@ class LexerError(Exception):
     def __str__(self):
         return 'lexer error: ' + repr(self.value)
 
+class Token(object):
+    def __init__(self, value, literal):
+        self.value_ = value
+        self.literal_ = literal
+    def value(self):
+        return self.value_
+    def literal(self):
+        return self.literal_
+    def __str__(self):
+        return '{0}({1})'.format(str(self.value( )), self.literal_)
+
 class Lexer(object):
 
     def __init__(self):
@@ -93,10 +104,6 @@ class Lexer(object):
         return input[size:]
 
     def get( self, input ):
-
-        def res_unit( token,  literal ):
-            return {'token': token,  'literal': literal }
-
         result = [ ]
         input = self.skip_whitespaces(input)
         while len(input):
@@ -104,24 +111,24 @@ class Lexer(object):
             if next:
                 tmp   = input[next[1]:]
                 ident = (len(tmp) > 0) and (self.isident(tmp[0]))
-                if next[0]['ident'] and ident:
+                if next[0].isident( ) and ident:
                     val = self.read_ident(input)
-                    result.append( res_unit( tokens.IDENT,  val[0] ) )
+                    result.append( Token( tokens.IDENT,  val[0] ) )
                     input = val[1]
                 else:
-                    result.append( res_unit( next[0],  input[0:next[1]] ) )
+                    result.append( Token( next[0],  input[0:next[1]] ) )
                     input = tmp
             elif self.isnumeric(input[0]):
                 val = self.read_number(input)
-                result.append( res_unit(tokens.NUMBER,  val[0]) )
+                result.append( Token(tokens.NUMBER,  val[0]) )
                 input = val[1]
             elif self.isident(input[0]):
                 val = self.read_ident(input)
-                result.append( res_unit( tokens.IDENT,  val[0]) )
+                result.append( Token( tokens.IDENT,  val[0]) )
                 input = val[1]
             elif input[0] == '"':
                 val = self.read_string(input[1:])
-                result.append( res_unit( tokens.STRING,  val[0]) )
+                result.append( Token( tokens.STRING,  val[0]) )
                 input = val[1]
             else:
                 raise LexerError("Unexpecteded symbol '{0}'".format(input[0]) )
