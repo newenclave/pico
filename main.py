@@ -3,6 +3,7 @@ import parser
 import environment as env
 import walker
 import builtin
+import tokens
 
 test = '''
 let fib = fn( n ) {
@@ -38,7 +39,16 @@ def REPL( ):
             print("Exception: ",  ex)
 
 if __name__ == '__main__':
-    REPL( )
+    t = tokens.Tokenizer( )
+    t.set('a',  0)
+    t.set('cat',  1)
+    t.set('ca',   1.5)
+    t.set('dog',  2)
+    t.set('fox',  3)
+    t.set('fire', 4)
+    print(t.values)
+
+    #REPL( )
     #e = env.Environment( )
     #e.set('len',   builtin.Len(e))
     #e.set('print', builtin.Print(e))
