@@ -15,7 +15,7 @@ class Token(object):
     def literal(self):
         return self.literal_
     def __str__(self):
-        return '{0}({1})'.format(str(self.value( )), self.literal_)
+        return '{0}("{1}")'.format(str(self.value( )), self.literal_)
 
 class Lexer(object):
 
@@ -55,28 +55,26 @@ class Lexer(object):
         self.tknz.set('[',      (tokens.LBRACKET,   False) )
         self.tknz.set(']',      (tokens.RBRACKET,   False) )
 
-    def isident( self, char ):
-        return char.isnumeric( ) or char.isalpha( ) or char == '_'
+    def isident( self, input ):
+        return input[0].isnumeric( ) or input[0].isalpha( ) or input[0] == '_'
 
-    def isnumeric( self, char ):
-        return char.isnumeric( )
+    def isnumeric( self, input ):
+        return input[0].isnumeric( )
 
     def ischar( self, char ):
         return char.isalfa( ) or char == '_'
 
     def read_number(self,  input):
-        res = ''
-        while len(input) > 0 and input[0].isnumeric( ):
-            res = res + input[0]
-            input = input[1:]
-        return (int(res),  input)
+        size = 0
+        while size < len(input) and self.isnumeric(input[size]):
+            size += 1
+        return size
 
     def read_ident(self,  input):
-        res = ''
-        while len(input) > 0 and self.isident(input[0]):
-            res = res + input[0]
-            input = input[1:]
-        return (res,  input)
+        size = 0
+        while size < len(input) and self.isident(input[size]):
+            size += 1
+        return size
 
     def read_string(self,  input):
         escape = {
@@ -114,19 +112,19 @@ class Lexer(object):
                 ident = (len(tmp) > 0) and (self.isident(tmp[0]))
                 if next[0][1] and ident:
                     val = self.read_ident(input)
-                    result.append( Token( tokens.IDENT,  val[0] ) )
-                    input = val[1]
+                    result.append( Token( tokens.IDENT,  input[0:val]) )
+                    input = input[val:]
                 else:
                     result.append( Token( next[0][0],  input[0:next[1]] ) )
                     input = tmp
             elif self.isnumeric(input[0]):
                 val = self.read_number(input)
-                result.append( Token(tokens.NUMBER,  val[0]) )
-                input = val[1]
-            elif self.isident(input[0]):
+                result.append( Token(tokens.NUMBER,  input[0:val]) )
+                input = input[val:]
+            elif self.isident(input):
                 val = self.read_ident(input)
-                result.append( Token( tokens.IDENT,  val[0]) )
-                input = val[1]
+                result.append( Token( tokens.IDENT,  input[0:val]) )
+                input = input[val:]
             elif input[0] == '"':
                 val = self.read_string(input[1:])
                 result.append( Token( tokens.STRING,  val[0]) )
