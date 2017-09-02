@@ -109,7 +109,7 @@ class Lexer(object):
         input = self.skip_whitespaces(input)
         while len(input):
             next = self.tknz.get(input)
-            if next:
+            if next[0]:
                 tmp   = input[next[1]:]
                 ident = (len(tmp) > 0) and (self.isident(tmp[0]))
                 if next[0][1] and ident:

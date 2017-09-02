@@ -3,7 +3,7 @@ import parser
 import environment as env
 import walker
 import builtin
-#import tokens
+import tokens
 
 test = '''
 let fib = fn( n ) {
@@ -39,6 +39,22 @@ def REPL( ):
             print("Exception: ",  ex)
 
 if __name__ == '__main__':
+    t = tokens.Tokenizer( )
+    t.set('if',     'IF')
+    t.set('else',   'ELSE')
+    t.set('let',    'LET')
+    t.set('return', 'RETURN')
+    t.set(' ',      'SPACE')
+    t.set('=',      'ASSIGN')
+    t.set('==',     'EQUAL')
+    t.set('===',    'DEEPEQUAL')
+
+    string = 'if else let return === = =='
+    while len(string):
+        next = t.get(string)
+        print(next[0])
+        string = string[next[1]:]
+    exit(1)
     REPL( )
     e = env.Environment( )
     e.set('len',   builtin.Len(e))
