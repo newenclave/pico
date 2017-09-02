@@ -21,38 +21,38 @@ class Lexer(object):
 
     def __init__(self):
         self.tknz = tokens.Tokenizer( )
-        self.tknz.set('fn',         tokens.FN)
-        self.tknz.set('return',     tokens.RETURN)
-        self.tknz.set('let',        tokens.LET)
-        self.tknz.set('if',         tokens.IF)
-        self.tknz.set('else',       tokens.ELSE)
-        self.tknz.set('false',      tokens.FALSE)
-        self.tknz.set('true',       tokens.TRUE)
+        self.tknz.set('fn',     (tokens.FN,         True ) )
+        self.tknz.set('return', (tokens.RETURN,     True ) )
+        self.tknz.set('let',    (tokens.LET,        True ) )
+        self.tknz.set('if',     (tokens.IF,         True ) )
+        self.tknz.set('else',   (tokens.ELSE,       True ) )
+        self.tknz.set('false',  (tokens.FALSE,      True ) )
+        self.tknz.set('true',   (tokens.TRUE,       True ) )
 
-        self.tknz.set('=',          tokens.ASSIGN)
-        self.tknz.set('<',          tokens.LESS)
-        self.tknz.set('>',          tokens.GREATER)
-        self.tknz.set('<=',         tokens.LESS_EQ)
-        self.tknz.set('>=',         tokens.GREATER_EQ)
-        self.tknz.set('==',         tokens.EQ)
-        self.tknz.set('!=',         tokens.NOT_EQ)
-        self.tknz.set('+',          tokens.PLUS)
-        self.tknz.set('-',          tokens.MINUS)
-        self.tknz.set('*',          tokens.ASTERISK)
-        self.tknz.set('/',          tokens.SLASH)
-        self.tknz.set('!',          tokens.BANG)
-        self.tknz.set(',',          tokens.COMMA)
-        self.tknz.set(':',          tokens.COLON)
-        self.tknz.set(';',          tokens.SEMICOLON)
+        self.tknz.set('=',      (tokens.ASSIGN,     False) )
+        self.tknz.set('<',      (tokens.LESS,       False) )
+        self.tknz.set('>',      (tokens.GREATER,    False) )
+        self.tknz.set('<=',     (tokens.LESS_EQ,    False) )
+        self.tknz.set('>=',     (tokens.GREATER_EQ, False) )
+        self.tknz.set('==',     (tokens.EQ,         False) )
+        self.tknz.set('!=',     (tokens.NOT_EQ,     False) )
+        self.tknz.set('+',      (tokens.PLUS,       False) )
+        self.tknz.set('-',      (tokens.MINUS,      False) )
+        self.tknz.set('*',      (tokens.ASTERISK,   False) )
+        self.tknz.set('/',      (tokens.SLASH,      False) )
+        self.tknz.set('!',      (tokens.BANG,       False) )
+        self.tknz.set(',',      (tokens.COMMA,      False) )
+        self.tknz.set(':',      (tokens.COLON,      False) )
+        self.tknz.set(';',      (tokens.SEMICOLON,  False) )
 
-        self.tknz.set('(',          tokens.LPAREN)
-        self.tknz.set(')',          tokens.RPAREN)
+        self.tknz.set('(',      (tokens.LPAREN,     False) )
+        self.tknz.set(')',      (tokens.RPAREN,     False) )
 
-        self.tknz.set('{',          tokens.LBRACE)
-        self.tknz.set('}',          tokens.RBRACE)
+        self.tknz.set('{',      (tokens.LBRACE,     False) )
+        self.tknz.set('}',      (tokens.RBRACE,     False) )
 
-        self.tknz.set('[',          tokens.LBRACKET)
-        self.tknz.set(']',          tokens.RBRACKET)
+        self.tknz.set('[',      (tokens.LBRACKET,   False) )
+        self.tknz.set(']',      (tokens.RBRACKET,   False) )
 
     def isident( self, char ):
         return char.isnumeric( ) or char.isalpha( ) or char == '_'
@@ -111,12 +111,12 @@ class Lexer(object):
             if next:
                 tmp   = input[next[1]:]
                 ident = (len(tmp) > 0) and (self.isident(tmp[0]))
-                if next[0].isident( ) and ident:
+                if next[0][1] and ident:
                     val = self.read_ident(input)
                     result.append( Token( tokens.IDENT,  val[0] ) )
                     input = val[1]
                 else:
-                    result.append( Token( next[0],  input[0:next[1]] ) )
+                    result.append( Token( next[0][0],  input[0:next[1]] ) )
                     input = tmp
             elif self.isnumeric(input[0]):
                 val = self.read_number(input)

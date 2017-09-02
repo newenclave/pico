@@ -49,12 +49,12 @@ if __name__ == '__main__':
     print(t.values)
 
     #REPL( )
-    #e = env.Environment( )
-    #e.set('len',   builtin.Len(e))
-    #e.set('print', builtin.Print(e))
-    #e.set('input', builtin.Input(e))
-    #res = parser.Parser(test).get( )
-    #wlk = walker.Walker(res, e)
-    #print(wlk.eval( ))
+    e = env.Environment( )
+    e.set('len',   builtin.Len(e))
+    e.set('print', builtin.Print(e))
+    e.set('input', builtin.Input(e))
+    res = parser.Parser(test).get( )
+    wlk = walker.Walker(res, e)
+    print(wlk.eval( ))
 
 
