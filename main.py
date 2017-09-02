@@ -3,7 +3,7 @@ import parser
 import environment as env
 import walker
 import builtin
-import tokens
+#import tokens
 
 test = '''
 let fib = fn( n ) {

@@ -28,6 +28,7 @@ class Lexer(object):
         self.tknz.set('else',   (tokens.ELSE,       True ) )
         self.tknz.set('false',  (tokens.FALSE,      True ) )
         self.tknz.set('true',   (tokens.TRUE,       True ) )
+        #self.tknz.set('end',    (tokens.END,        True ) )
 
         self.tknz.set('=',      (tokens.ASSIGN,     False) )
         self.tknz.set('<',      (tokens.LESS,       False) )

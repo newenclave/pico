@@ -6,6 +6,7 @@ IF          = 'if'
 ELSE        = 'else'
 FALSE       = 'false'
 TRUE        = 'true'
+END         = 'end'
 
 ASSIGN      = '='
 EQ          = '=='
