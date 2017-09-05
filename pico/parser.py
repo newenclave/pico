@@ -12,13 +12,14 @@ class Parser(object):
 
     class precedence:
         LOWEST          = 0
-        EQUALS          = 1 # == or !=
-        LESSGREATER     = 2 # > or <
-        SUM             = 3 # + or -
-        PRODUCT         = 4 # * or /
-        PREFIX          = 5 # -X or !X
-        CALL            = 6 # myFunction(X)
-        INDEX           = 7 # array[index]
+        INFIF           = 1 # infix if
+        EQUALS          = 2 # == or !=
+        LESSGREATER     = 3 # > or <
+        SUM             = 4 # + or -
+        PRODUCT         = 5 # * or /
+        PREFIX          = 6 # -X or !X
+        CALL            = 7 # myFunction(X)
+        INDEX           = 8 # array[index]
 
     def __init__(self,  input):
         lex = lexer.Lexer( )
@@ -56,10 +57,12 @@ class Parser(object):
 
             tokens.LBRACKET:    self.get_index,
             tokens.LPAREN:      self.get_call,
+            tokens.IF:          self.get_infif,
         }
 
     def precedence_for(self, token):
         vals = {
+            tokens.IF:          self.precedence.INFIF,
             tokens.EQ:          self.precedence.EQUALS,
             tokens.NOT_EQ:      self.precedence.EQUALS,
             tokens.LESS:        self.precedence.LESSGREATER,
@@ -155,12 +158,13 @@ class Parser(object):
         expr = self.get_expression( prec = self.precedence.PREFIX )
         return ast.Prefix(oper,  expr)
 
-    def get_infix( self,  left ):
+    def get_infix( self, left ):
         oper = self.current_inf( )
         current_precedence = self.precedence_for(self.current_inf( ))
         self.advance( )
         right = self.get_expression( prec = current_precedence )
         return ast.Infix(oper, left, right)
+
 
     def get_paren(self):
         self.advance( )
@@ -223,6 +227,16 @@ class Parser(object):
             self.advance( )
             altbody = self.get_scope(tokens.RBRACE)
         return ast.IfElse(cond, ast.Scope(body), ast.Scope(altbody))
+
+
+    def get_infif(self, left):
+        self.advance( )
+        cond = self.get_expression( )
+        altbody = []
+        if self.is_expected(tokens.ELSE, is_error = False):
+            self.advance( )
+            altbody = [self.get_expression( )]
+        return ast.IfElse(cond,  ast.Scope([left]),  ast.Scope(altbody))
 
     def get_array(self):
         self.advance( )

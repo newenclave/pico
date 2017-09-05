@@ -40,16 +40,16 @@ def REPL( ):
             print("Exception: ",  ex)
 
 if __name__ == '__main__':
-    lex = pico.lexer.Lexer( )
-    input = 'let a = 10; '      \
-            'let b = "hello!"'  \
-            'let c = "less" if a < 10 else "greater"'
-    res = lex.get(input)
-    for r in res:
-        print(r,  end=", ")
-    print( )
+    #lex = pico.lexer.Lexer( )
+    #input = 'let a = 10; '      \
+    #        'let b = "hello!"'  \
+    #        'let c = "less" if a < 10 else "greater"'
+    #res = lex.get(input)
+    #for r in res:
+    #    print(r,  end=", ")
+    #print( )
     #exit(1)
-    #REPL( )
+    REPL( )
     e = env.Environment( )
     e.set('len',   pico.builtin.Len(e))
     e.set('print', pico.builtin.Print(e))
