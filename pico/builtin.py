@@ -1,4 +1,4 @@
-import objects
+from . import objects
 
 class BuiltinError(Exception):
     def __init__(self, value):

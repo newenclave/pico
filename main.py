@@ -1,10 +1,10 @@
 
-import parser
-import environment as env
-import walker
-import builtin
-import lexer
-import tokens
+import pico.parser
+import pico.environment as env
+import pico.walker
+import pico.builtin
+import pico.lexer
+import pico.tokens
 
 test = '''
 let fib = fn( n ) {
@@ -22,17 +22,17 @@ print(fib(100))
 
 def REPL( ):
     e = env.Environment( )
-    e.set('len',   builtin.Len(e))
-    e.set('print', builtin.Print(e))
-    e.set('input', builtin.Input(e))
+    e.set('len',   pico.builtin.Len(e))
+    e.set('print', pico.builtin.Print(e))
+    e.set('input', pico.builtin.Input(e))
     while True:
         try:
             str = input('>>> ')
             if str == 'exit':
                 break
-            parse = parser.Parser(str)
+            parse = pico.parser.Parser(str)
             res = parse.get( )
-            wlk = walker.Walker(res, e)
+            wlk = pico.walker.Walker(res, e)
             res = wlk.eval( )
             if res:
                 print(res)
@@ -40,19 +40,22 @@ def REPL( ):
             print("Exception: ",  ex)
 
 if __name__ == '__main__':
-    lex = lexer.Lexer( )
-    input = 'let1 return1'
+    lex = pico.lexer.Lexer( )
+    input = 'let a = 10; '      \
+            'let b = "hello!"'  \
+            'let c = "less" if a < 10 else "greater"'
     res = lex.get(input)
     for r in res:
-        print(r)
-    exit(1)
-    REPL( )
-    #e = env.Environment( )
-    #e.set('len',   builtin.Len(e))
-    #e.set('print', builtin.Print(e))
-    #e.set('input', builtin.Input(e))
-    #res = parser.Parser(test).get( )
-    #wlk = walker.Walker(res, e)
-    #print(wlk.eval( ))
+        print(r,  end=", ")
+    print( )
+    #exit(1)
+    #REPL( )
+    e = env.Environment( )
+    e.set('len',   pico.builtin.Len(e))
+    e.set('print', pico.builtin.Print(e))
+    e.set('input', pico.builtin.Input(e))
+    res = pico.parser.Parser(test).get( )
+    wlk = pico.walker.Walker(res, e)
+    print(wlk.eval( ))
 
 

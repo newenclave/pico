@@ -14,15 +14,15 @@
   <Email></Email>
   <Eol index="-1"/>
   <Sources>
-    <Source>__init__.py</Source>
-    <Source>astree.py</Source>
-    <Source>environment.py</Source>
-    <Source>lexer.py</Source>
+    <Source>pico/__init__.py</Source>
+    <Source>pico/astree.py</Source>
+    <Source>pico/environment.py</Source>
+    <Source>pico/lexer.py</Source>
     <Source>main.py</Source>
-    <Source>objects.py</Source>
-    <Source>parser.py</Source>
-    <Source>tokens.py</Source>
-    <Source>walker.py</Source>
+    <Source>pico/objects.py</Source>
+    <Source>pico/parser.py</Source>
+    <Source>pico/tokens.py</Source>
+    <Source>pico/walker.py</Source>
   </Sources>
   <Forms/>
   <Translations/>
