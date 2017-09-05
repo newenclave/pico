@@ -1,7 +1,7 @@
 from . import astree
 from . import environment
 from . import objects
-from . import tokens as tokens
+from . import tokens
 
 class ExecutionError(Exception):
     def __init__(self, value):
