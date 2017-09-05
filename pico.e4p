@@ -15,7 +15,7 @@
   <Eol index="-1"/>
   <Sources>
     <Source>pico/__init__.py</Source>
-    <Source>pico/astree.py</Source>
+    <Source>pico/ast.py</Source>
     <Source>pico/environment.py</Source>
     <Source>pico/lexer.py</Source>
     <Source>main.py</Source>

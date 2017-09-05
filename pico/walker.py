@@ -1,4 +1,4 @@
-from . import astree
+from . import ast
 from . import environment
 from . import objects
 from . import tokens
@@ -219,49 +219,49 @@ class Walker(object):
 
     def eval_next(self, node,  env):
         res = None
-        if isinstance(node, astree.Scope):
+        if isinstance(node, ast.Scope):
             res = self.eval_scope(node, env)
 
-        elif isinstance(node, astree.Let):
+        elif isinstance(node, ast.Let):
             res = self.eval_let(node, env)
 
-        elif isinstance(node, astree.Return):
+        elif isinstance(node, ast.Return):
             res = self.eval_return(node, env)
 
-        elif isinstance(node, astree.Number):
+        elif isinstance(node, ast.Number):
             res = self.eval_number(node, env)
 
-        elif isinstance(node, astree.Boolean):
+        elif isinstance(node, ast.Boolean):
             res = self.eval_boolean(node, env)
 
-        elif isinstance(node, astree.String):
+        elif isinstance(node, ast.String):
             res = self.eval_string(node, env)
 
-        elif isinstance(node, astree.Ident):
+        elif isinstance(node, ast.Ident):
             res = self.eval_ident(node, env)
 
-        elif isinstance(node, astree.Table):
+        elif isinstance(node, ast.Table):
             res = self.eval_table(node, env)
 
-        elif isinstance(node, astree.Array):
+        elif isinstance(node, ast.Array):
             res = self.eval_array(node, env)
 
-        elif isinstance(node, astree.Index):
+        elif isinstance(node, ast.Index):
             res = self.eval_index(node, env)
 
-        elif isinstance(node, astree.Prefix):
+        elif isinstance(node, ast.Prefix):
             res = self.eval_prefix(node, env)
 
-        elif isinstance(node, astree.Infix):
+        elif isinstance(node, ast.Infix):
             res = self.eval_infix(node, env)
 
-        elif isinstance(node, astree.Function):
+        elif isinstance(node, ast.Function):
             res = self.eval_fn(node, env)
 
-        elif isinstance(node, astree.Call):
+        elif isinstance(node, ast.Call):
             res = self.eval_call(node, env)
 
-        elif isinstance(node, astree.IfElse):
+        elif isinstance(node, ast.IfElse):
             res = self.eval_if(node, env)
 
         return res
